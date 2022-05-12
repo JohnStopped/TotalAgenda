@@ -1,7 +1,10 @@
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
  
 public class Client extends JFrame implements ActionListener{
 
@@ -12,7 +15,8 @@ public class Client extends JFrame implements ActionListener{
     public Client() {
 
         //Se crea el panel de inicio
-        //panel_inicio = panelInicio();
+        this.setLayout(null); //Layout absoluto
+        panel_inicio = panelInicio();
 
         //Se crea el panel de cuenta
         //panel_cuenta = panelCuenta();
@@ -24,21 +28,8 @@ public class Client extends JFrame implements ActionListener{
         menu_bar=menuBar();
 
         //Asociamos los elementos al JFrame
-        setJMenuBar(menu_bar);
-        //setContentPane(panel_inicio);
-
-        JLabel label_correo = new JLabel("Correo");
-        JTextField field_correo = new JTextField("correo",20);
-        JLabel label_pass = new JLabel("Contraseña");
-        JTextField field_pass = new JTextField("contraseña",20);
-        JButton boton_login = new JButton("Inicar Sesión");
-        JButton boton_register = new JButton("Crear Cuenta");
-        add(label_correo);
-        add(field_correo);
-        add(label_pass);
-        add(field_pass);
-        add(boton_login);
-        add(boton_register);
+        this.setJMenuBar(menu_bar);
+        this.add(panel_inicio,BorderLayout.CENTER);
 
         //Configurar y mostrar JFrame
         initPantalla();
@@ -46,12 +37,13 @@ public class Client extends JFrame implements ActionListener{
 
     private void initPantalla() {
 
-        setLayout(null); //Layout absoluto
-        setTitle("TotalAgenda"); //Título del JFrame
-        setSize(640,480); //Dimensiones del JFrame
-        setResizable(true); //No redimensionable
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
-        setVisible(true); //Mostrar JFrame
+        this.setTitle("TotalAgenda"); //Título del JFrame
+        this.setSize(800,550); //Dimensiones del JFrame (ancho,alto)
+        this.setMinimumSize(new Dimension(800,550)); //(ancho,alto)
+        this.setLocationRelativeTo(null); //Esto permite que la ventana aparezca al centro
+        this.setResizable(false); //Redimensionable
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
+        this.setVisible(true); //Mostrar JFrame
     }
 
     /* Método que implementa las acciones de cada ítem de menú */
@@ -69,12 +61,39 @@ public class Client extends JFrame implements ActionListener{
     }
     private JPanel panelInicio(){
         JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(6,1,15,15)); // filas,columnas,pixeles entre filas,pixeles entre columnas
+
         JLabel label_correo = new JLabel("Correo");
+        //label_correo.setMinimumSize(new Dimension(20, 5));
+        //label_correo.setPreferredSize(new Dimension(20, 5));
+        //label_correo.setMaximumSize(new Dimension(20, 5));
+        //label_correo.setLocation(400,100);
         JTextField field_correo = new JTextField("correo",20);
+        //label_correo.setMinimumSize(new Dimension(20, 5));
+        //label_correo.setPreferredSize(new Dimension(20, 5));
+        //label_correo.setMaximumSize(new Dimension(20, 5));
+        //label_correo.setLocation(400,130);
         JLabel label_pass = new JLabel("Contraseña");
+        //label_correo.setMinimumSize(new Dimension(20, 5));
+        //label_correo.setPreferredSize(new Dimension(20, 5));
+        //label_correo.setMaximumSize(new Dimension(20, 5));
+        //label_correo.setLocation(400,160);        
         JTextField field_pass = new JTextField("contraseña",20);
+        //label_correo.setMinimumSize(new Dimension(20, 5));
+        //label_correo.setPreferredSize(new Dimension(20, 5));
+        //label_correo.setMaximumSize(new Dimension(20, 5));
+        //label_correo.setLocation(400,190);        
         JButton boton_login = new JButton("Inicar Sesión");
+        //label_correo.setMinimumSize(new Dimension(20, 5));
+        //label_correo.setPreferredSize(new Dimension(20, 5));
+        //label_correo.setMaximumSize(new Dimension(20, 5));
+        //label_correo.setLocation(400,220);        
         JButton boton_register = new JButton("Crear Cuenta");
+        //label_correo.setMinimumSize(new Dimension(20, 5));
+        //label_correo.setPreferredSize(new Dimension(20, 5));
+        //label_correo.setMaximumSize(new Dimension(20, 5));
+        //label_correo.setLocation(400,250);        
+
         panel.add(label_correo);
         panel.add(field_correo);
         panel.add(label_pass);
