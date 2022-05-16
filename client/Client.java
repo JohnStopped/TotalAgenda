@@ -11,7 +11,7 @@ public class Client extends JFrame implements ActionListener{
     private JMenuBar menu_bar;
     private JMenuItem menuItem_calendario, menuItem_cuenta, menuItem_fin;
     private JPanel panel_inicio,panel_calendario,panel_cuenta;
-    private JButton boton_login;
+    private JButton boton_formulario_login,boton_formulario_crear_cuenta,boton_register,boton_inicio ;
 
 //JTextField:
     // .setBackground(); // Color del fondo
@@ -21,46 +21,14 @@ public class Client extends JFrame implements ActionListener{
     // .getText().isEmpty() // Así podemos validar si está vacío o no
 
     public Client() {
-        
         this.setLocationRelativeTo(null); //Esto permite que la ventana aparezca al centro
         this.setLayout(null); //Layout absoluto
-        
-        JLabel label_correo = new JLabel("Correo");
-        label_correo.setBounds(40,30,200,30);
-        this.add(label_correo);
 
-        JTextField field_correo = new JTextField("email",20);
-        field_correo.setBounds(40,60,200,30);
-        this.add(field_correo);
+        MarcoInicioSesion();
 
-        JLabel label_pass = new JLabel("Contraseña");
-        label_pass.setBounds(40,110,200,30);    
-        this.add(label_pass);
-
-        JPasswordField field_pass = new JPasswordField();
-        //JTextField field_pass = new JTextField("contraseña",20);
-        field_pass.setBounds(40,140,200,30);   
-        this.add(field_pass);
-
-        boton_login = new JButton("Inicar Sesión");
-        boton_login.setBounds(40,190,200,25);
-        boton_login.addActionListener(this);     
-        this.add(boton_login);
-
-        JButton boton_register = new JButton("Crear Cuenta");
-        boton_register.setBounds(40,230,200,25);        
-        this.add(boton_register);
-
-        this.setBackground(Color.decode("#ACBFC5"));
-
-        // Configuramos la ventana
-        this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
-        this.setSize(280,300); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(false); //No redimensionable
         //this.setMinimumSize(new Dimension(800,550)); //(ancho,alto)
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
-        this.setVisible(true); //Mostrar JFrame
-
+        this.setVisible(true); //Mostrar JFrame 
         //Instancia un objeto BorderLayout con una separacion de 15px en horizonal y vertical
         //BorderLayout miBorderLayout = new BorderLayout(15,15);
 
@@ -82,9 +50,33 @@ public class Client extends JFrame implements ActionListener{
             this.getContentPane().add(panelCuenta());
             this.getContentPane().revalidate();
         }
-        if (e.getSource()==boton_login) {
-           System.out.println("Se ha pulsado el botón boton_login");
-           cambioMarco();
+        if (e.getSource()==boton_inicio) {
+           System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoInicioSesion();
+            this.getContentPane().revalidate();           
+        }
+        if (e.getSource()==boton_register) {
+           System.out.println("Se ha pulsado el botón para ir a crear cuenta");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoCreaCuenta();
+            this.getContentPane().revalidate();   
+        }                
+        if (e.getSource()==boton_formulario_login) {
+           System.out.println("Se ha pulsado el botón para enviar el formulario del login");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoApp();
+            this.getContentPane().revalidate();            
+        }
+        if (e.getSource()==boton_formulario_crear_cuenta) {
+           System.out.println("Se ha pulsado el botón para enviar el formulario para crear la cuenta");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoInicioSesion();
+            this.getContentPane().revalidate();
         }
         if (e.getSource()==menuItem_fin) {
             System.out.println("Se llama a finalizar la aplicación");
@@ -92,9 +84,86 @@ public class Client extends JFrame implements ActionListener{
         }
     }
 
-    private void cambioMarco(){
-        this.getContentPane().removeAll();
-        this.getContentPane().invalidate();
+    private void MarcoInicioSesion(){
+        
+        JLabel label_correo_iniciosesion = new JLabel("Correo");
+        label_correo_iniciosesion.setBounds(40,30,200,30);
+        this.add(label_correo_iniciosesion);
+
+        JTextField field_correo_iniciosesion = new JTextField("email",20);
+        field_correo_iniciosesion.setBounds(40,60,200,30);
+        this.add(field_correo_iniciosesion);
+
+        JLabel label_pass_iniciosesion = new JLabel("Contraseña");
+        label_pass_iniciosesion.setBounds(40,110,200,30);    
+        this.add(label_pass_iniciosesion);
+
+        JPasswordField field_pass_iniciosesion = new JPasswordField();
+        //JTextField field_pass = new JTextField("contraseña",20);
+        field_pass_iniciosesion.setBounds(40,150,200,30);   
+        this.add(field_pass_iniciosesion);
+
+        boton_formulario_login = new JButton("Inicar Sesión");
+        boton_formulario_login.setBounds(40,190,200,25);
+        boton_formulario_login.addActionListener(this);     
+        this.add(boton_formulario_login);
+
+        boton_register = new JButton("Crear Cuenta");
+        boton_register.setBounds(40,230,200,25);
+        boton_register.addActionListener(this);    
+        this.add(boton_register);
+
+        //this.setBackground(Color.decode("#ACBFC5"));
+
+        // Configuramos la ventana
+        this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
+        this.setSize(280,300); //Dimensiones del JFrame (ancho,alto)
+        this.setResizable(false); //No redimensionable
+
+    }
+
+    private void MarcoCreaCuenta(){
+
+        JLabel label_correo = new JLabel("Correo");
+        label_correo.setBounds(40,30,200,30);
+        this.add(label_correo);
+
+        JTextField field_correo = new JTextField("email",20);
+        field_correo.setBounds(40,60,200,30);
+        this.add(field_correo);
+
+        JLabel label_pass = new JLabel("Contraseña");
+        label_pass.setBounds(40,110,200,30);    
+        this.add(label_pass);
+
+        JPasswordField field_pass = new JPasswordField();
+        //JTextField field_pass = new JTextField("contraseña",20);
+        field_pass.setBounds(40,140,200,30);   
+        this.add(field_pass);
+
+        JPasswordField field_pass2 = new JPasswordField();
+        field_pass2.setBounds(40,170,200,30);   
+        this.add(field_pass2);
+
+        boton_formulario_crear_cuenta = new JButton("Crear Cuenta");
+        boton_formulario_crear_cuenta.setBounds(40,220,200,25);
+        boton_formulario_crear_cuenta.addActionListener(this);     
+        this.add(boton_formulario_crear_cuenta);
+
+        boton_inicio = new JButton("Iniciar Sesión");
+        boton_inicio.setBounds(40,250,200,25);
+        boton_inicio.addActionListener(this);        
+        this.add(boton_inicio);
+
+        this.setBackground(Color.decode("#ACBFC5"));
+
+        // Configuramos la ventana
+        this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
+        this.setSize(290,300); //Dimensiones del JFrame (ancho,alto)
+        this.setResizable(false); //No redimensionable
+    }
+
+    private void MarcoApp(){
 
         this.setTitle("TotalAgenda"); //Título del JFrame
         this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
@@ -107,10 +176,6 @@ public class Client extends JFrame implements ActionListener{
         JLabel label_correo = new JLabel("PRUEBA");
         label_correo.setBounds(40,30,200,30);
         this.add(label_correo);
-
-
-        this.getContentPane().add(panelCalendario());
-        this.getContentPane().revalidate(); 
 
     }
     private JPanel panelCuenta(){
