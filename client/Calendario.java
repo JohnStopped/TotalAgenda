@@ -1,41 +1,70 @@
 import java.util.*;
 
 
-public class calendario {
+public static class calendario {
 
-  private enum semana{ 
-    LUN,MAR,MIE,JUE,VIE,SAB,DOM;
+  //Mes empieza a 1
+  public static void calendar(int year, int month){
+    GregorianCalendar cal_iterador = new GregorianCalendar(year,month-1,0);
+    cal_iterador.setFirstDayOfWeek(GregorianCalendar.MONDAY);
+    int ndias = cal_iterador.getActualMaximum(GregorianCalendar.DATE)+1;
+    //boolean bisiesto = cal_iterador.isLeapYear(year);
+
+    System.out.println("Año: " + year);
+    System.out.println("Mes: " + month);
+    System.out.println("Numero Dias: " + ndias);
+    System.out.println("Dia de semana que empieza: " + dia_semana(year,month,1));
+    int[][] matrix = matrix(dia_semana(year,month,1),ndias);
+    imprimeMatrix(matrix);
   }
 
-  private void calendar(int year, int month){
-    Calendar cal = new GregorianCalendar();
-    int dia_actual = cal.get(Calendar.DATE);
-    int mes_actual = cal.get(Calendar.MONTH);
-    int anio_actual = cal.get(Calendar.YEAR);
-
-    Calendar cal_iterador = new GregorianCalendar(year,month,1);
-    int ndias = cal_iterador.getActualMaximun(Calendar.DATE);
-    boolean bisiesto = gCal.isLeapYear(year);
-    cal_iterador.setFirstDayOfWeek(Calendar.MONDAY);
-
-    int[][] matrix = matrix(dias_semana(year,month,1),ndias){
-
-  }
-  private void matrix(int dia_semana_1, int ndias){
-    int[][] matrix = new int[4][7];
+  private static void imprimeMatrix(int [][] matrix){
     int i;
     int j;
-    for (i = dia_semana_1; i<dia_semana_1+ndias;i++ ){
-      //TODO
-      if()
+    for (i = 0; (i<6) ;i++ ){
+      for (j=0; (j<7) ;j++){
+        System.out.println(matrix[i][j]);
+      }
+      System.out.println();
     }
   }
-  private int dia_semana(int year,int month,int day){
-    int a = (14 - mes) / 12;
-    int y = anio - a;
-    int m = mes + 12 * a - 2;
-    int d = (dia + y + y/4 - y/100 + y/400 + (31*m)/12) % 7;
 
-    return d;
+  //Dia del mes y dia de la semana empiezan a 1
+  private static int[][] matrix(int dia_semana_1, int ndias){
+    //Se rellena una matriz de 6 filas con 0 si pertenece al día anterior, y el número del día si pertenece a este mes.
+    int[][] matrix = new int[6][7];
+    int z = 1;
+    int i;
+    int j;
+    for (i = 0; (i<6) && (z<ndias+1) ;i++ ){
+      for (j = 0; (j<7) && (z<ndias+1) ;j++){
+
+        if ((i==0)&&(j<dia_semana_1-1)){
+          matrix[i][j] = 0;
+        }else{
+          matrix[i][j] = z;
+          z++;
+        }
+
+      }
+    }
+    return matrix;
   }
+
+  //Mes, dia del mes y dia de la semana empiezan a 1
+  private static int dia_semana(int year,int month,int day){
+    int dias[] = {7,1,2,3,4,5,6};
+    int a = (14 - month) / 12;
+    int y = year - a;
+    int m = month + 12 * a - 2;
+
+    //Devuelve 0 para domingo, 1 para lunes...
+    int d = (day + y + y/4 - y/100 + y/400 + (31*m)/12) % 7;
+
+    //Devuelve 1 para lunes, 2 para martes,...
+    return dias[d];
+  }
+
+
+}
 
