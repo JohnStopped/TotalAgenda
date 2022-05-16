@@ -13,20 +13,23 @@ public class Client extends JFrame implements ActionListener{
     private JPanel panel_inicio,panel_calendario,panel_cuenta;
     private JButton boton_login;
 
+//JTextField:
+    // .setBackground(); // Color del fondo
+    // .setForeground(); // Color de la fuente
+    // .setFont(new java.awt.Font("Swis721 Blk BT", 1, 12)); // Tipo de fuente
+    // .setText("texto"); // Para vaciarlo basta con asignar ""
+    // .getText().isEmpty() // Así podemos validar si está vacío o no
+
     public Client() {
         
         this.setLocationRelativeTo(null); //Esto permite que la ventana aparezca al centro
         this.setLayout(null); //Layout absoluto
-
-        //Se crea el panel de inicio
-        //panel_inicio = panelInicio();
-        //this.add(panel_inicio);
         
         JLabel label_correo = new JLabel("Correo");
         label_correo.setBounds(40,30,200,30);
         this.add(label_correo);
 
-        JTextField field_correo = new JTextField("correo",20);
+        JTextField field_correo = new JTextField("email",20);
         field_correo.setBounds(40,60,200,30);
         this.add(field_correo);
 
@@ -34,7 +37,8 @@ public class Client extends JFrame implements ActionListener{
         label_pass.setBounds(40,110,200,30);    
         this.add(label_pass);
 
-        JTextField field_pass = new JTextField("contraseña",20);
+        JPasswordField field_pass = new JPasswordField();
+        //JTextField field_pass = new JTextField("contraseña",20);
         field_pass.setBounds(40,140,200,30);   
         this.add(field_pass);
 
