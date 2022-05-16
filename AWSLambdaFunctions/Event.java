@@ -6,14 +6,16 @@ class Event{
 
     private String name;
     private String note;
-    private Date date;
+    private Calendar date;
+    private String color;
 
     Event(){}
     
-    Event(String name, String note, Date date7) {
+    Event(String name, String note, Calendar date, String color) {
         this.name = name;
 		this.note = note;
 		this.date = date;
+        this.color = color;
     }
 
     public void setName(String name){
@@ -36,9 +38,29 @@ class Event{
         return this.note;
     }
 
+    public void setDate(Calendar date){
+
+        this.date = date;
+    }
+
+    public Calendar getDate(){
+
+        return this.date;
+    }
+
+    public void setColor(String color){
+
+        this.color = color;
+    }
+
+    public String getColor(){
+
+        return this.color;
+    }
+
+
     public String toString(){
-        //TODO Hay que hacer que se devuelva AM o PM en función de lo que devuelca el método get de calendar (0 o 1)
-        return (calendario.get(Calendar.HOUR) +":"+ calendario.get(Calendar.MINUTE) + calendario.get(Calendar.AM_PM)); 
+        return (date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" "+ name);
     }
 
 }
