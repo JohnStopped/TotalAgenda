@@ -8,10 +8,17 @@ import java.awt.GridLayout;
  
 public class Client extends JFrame implements ActionListener{
 
+    private JButton boton_formulario_login,boton_formulario_crear_cuenta,boton_register,boton_inicio;
     private JMenuBar menu_bar;
     private JMenuItem menuItem_calendario, menuItem_evento, menuItem_fin;
-    private JPanel panel_inicio,panel_calendario,panel_cuenta;
-    private JButton boton_formulario_login,boton_formulario_crear_cuenta,boton_register,boton_inicio ;
+    private JButton boton_mes_mayor,boton_mes_menor;
+    private JLabel label_anio_iterador,label_mes_iterador;
+
+    //private List<Event> eventos;
+    private int mes_actual,anio_actual,dia_actual;
+    private int mes_iterador;
+    private int anio_iterador;
+    private JLabel[][] label_day_month;
 
 //JTextField:
     // .setBackground(); // Color del fondo
@@ -21,6 +28,16 @@ public class Client extends JFrame implements ActionListener{
     // .getText().isEmpty() // Así podemos validar si está vacío o no
 
     public Client() {
+
+        Calendar calendario = new GregorianCalendar();
+        mes_actual = calendario.get(Calendar.MONTH)+1 ;
+        anio_actual = calendario.get(Calendar.YEAR) ;
+        dia_actual = calendario.get(Calendar.DATE) ;
+
+        mes_iterador = mes_actual ;
+        anio_iterador = anio_actual ;         
+        //System.out.println(calendario.get(Calendar.DATE) +"-"+ calendario.get(Calendar.MONTH) +"-"+ calendario.get(Calendar.YEAR) +" "+ calendario.get(Calendar.HOUR_OF_DAY) +":"+ calendario.get(Calendar.MINUTE));
+
         this.setLocationRelativeTo(null); //Esto permite que la ventana aparezca al centro
         this.setLayout(null); //Layout absoluto
 
@@ -50,6 +67,10 @@ public class Client extends JFrame implements ActionListener{
             MarcoEventos();
             this.getContentPane().revalidate(); 
         }
+        if (e.getSource()==menuItem_fin) {
+            System.out.println("Se llama a finalizar la aplicación");
+            System.exit(0);
+        }        
         if (e.getSource()==boton_inicio) {
            System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
             this.getContentPane().removeAll();
@@ -78,12 +99,57 @@ public class Client extends JFrame implements ActionListener{
             MarcoInicioSesion();
             this.getContentPane().revalidate();
         }
-        if (e.getSource()==menuItem_fin) {
-            System.out.println("Se llama a finalizar la aplicación");
-            System.exit(0);
+        if (e.getSource()==boton_mes_menor) {
+            decrementaMesIterador();
+            System.out.println("Se va al mes anterior: " + mes_iterador);
+            cambiaCalendario();
+        }        
+        if (e.getSource()==boton_mes_mayor) {
+            incrementaMesIterador();
+            System.out.println("Se va al mes siguiente: " + mes_iterador);
+            cambiaCalendario();
         }
     }
 
+    private void incrementaMesIterador(){
+        if (mes_iterador==12){
+            mes_iterador=1;
+            anio_iterador=anio_iterador+1;
+        }else{
+            mes_iterador = mes_iterador+1;
+        }
+    }
+
+    private void decrementaMesIterador(){
+        if (mes_iterador==1){
+            mes_iterador=12;
+            anio_iterador=anio_iterador-1;
+        }else{
+            mes_iterador = mes_iterador-1;
+        }
+    }
+
+    private void cambiaCalendario(){
+
+        label_anio_iterador.setText(String.valueOf(anio_iterador));
+        label_mes_iterador.setText(String.valueOf(mes_iterador));
+        int i=0;
+        int j=0;
+        int int_aux;
+        int[][] matrix = calendario.calendar(anio_iterador,mes_iterador);
+        for (i = 0; (i<6) ;i++ ){
+          for (j=0; (j<7) ;j++){
+            int_aux = matrix[i][j];
+
+            if (int_aux!=0){
+                label_day_month[i][j].setText("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>");
+            }else{
+                label_day_month[i][j].setText("");
+            }
+          }
+          
+        }
+    }
     private void MarcoInicioSesion(){
         
         JLabel label_correo_iniciosesion = new JLabel("Correo");
@@ -188,10 +254,64 @@ public class Client extends JFrame implements ActionListener{
         //Creamos la barra de menu de la ventana
         menu_bar=menuBar();
         this.setJMenuBar(menu_bar);
+        
+        int ancho = 60;
+        int alto = 60;
+        int x = 40;
+        int y = 90;
+        int i = 0;
+        int j = 0;
+        int int_aux;
 
-        JLabel label_correo = new JLabel("PRUEBA");
-        label_correo.setBounds(40,30,200,30);
-        this.add(label_correo);
+        boton_mes_menor = new JButton("<--");
+        boton_mes_menor.setBounds(x,30,35,25);
+        boton_mes_menor.addActionListener(this);     
+        this.add(boton_mes_menor);
+
+        boton_mes_mayor = new JButton("-->");
+        boton_mes_mayor.setBounds(x+35,30,35,25);
+        boton_mes_mayor.addActionListener(this);     
+        this.add(boton_mes_mayor);
+
+        label_anio_iterador = new JLabel(String.valueOf(anio_iterador));
+        label_anio_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        label_anio_iterador.setBounds(x+35*2,30,35,25);   
+        this.add(label_anio_iterador);
+
+        label_mes_iterador = new JLabel(String.valueOf(mes_iterador));
+        label_mes_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        label_mes_iterador.setBounds(x+35*3,30,35,25);    
+        this.add(label_mes_iterador);
+
+        label_day_month = new JLabel[6][7];
+        int[][] matrix = calendario.calendar(anio_actual,mes_actual);
+        String[] dias= {"L","M","X","J","V","S","D"};
+
+          for (j=0; (j<7) ;j++){
+            label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+dias[j]+"</div></html>", SwingConstants.CENTER);
+
+            label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            label_day_month[i][j].setBounds(x+ancho*j,60,ancho,30);
+            this.add(label_day_month[i][j]);
+        }
+
+
+        for (i = 0; (i<6) ;i++ ){
+          for (j=0; (j<7) ;j++){
+            int_aux = matrix[i][j];
+
+            if (int_aux!=0){
+                label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>", SwingConstants.CENTER);
+            }else{
+                label_day_month[i][j] = new JLabel("");
+            }
+
+            label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            label_day_month[i][j].setBounds(x+ancho*j,y+alto*i,ancho,alto);
+            this.add(label_day_month[i][j]);
+          }
+          
+        }
 
     }
     
@@ -200,6 +320,9 @@ public class Client extends JFrame implements ActionListener{
         JMenuBar menu = new JMenuBar();
 
         //Creamos los menuItem y se los asociamos a la barra de menu
+        JLabel menuFecha=new JLabel(String.valueOf(dia_actual)+"/"+String.valueOf(mes_actual)+"/"+String.valueOf(anio_actual));
+        menu.add(menuFecha);
+
         menuItem_calendario=new JMenuItem("Calendario");
         menuItem_calendario.addActionListener(this);
         menu.add(menuItem_calendario);

@@ -1,10 +1,10 @@
 import java.util.*;
 
 
-public static class calendario {
+public class calendario {
 
   //Mes empieza a 1
-  public static void calendar(int year, int month){
+  public static int[][] calendar(int year, int month){
     GregorianCalendar cal_iterador = new GregorianCalendar(year,month-1,0);
     cal_iterador.setFirstDayOfWeek(GregorianCalendar.MONDAY);
     int ndias = cal_iterador.getActualMaximum(GregorianCalendar.DATE)+1;
@@ -15,7 +15,7 @@ public static class calendario {
     System.out.println("Numero Dias: " + ndias);
     System.out.println("Dia de semana que empieza: " + dia_semana(year,month,1));
     int[][] matrix = matrix(dia_semana(year,month,1),ndias);
-    imprimeMatrix(matrix);
+    return matrix;
   }
 
   private static void imprimeMatrix(int [][] matrix){
