@@ -75,14 +75,16 @@ public class Client extends JFrame implements ActionListener{
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
             MarcoCalendario();
-            this.getContentPane().revalidate();            
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);
         }        
         if (e.getSource()==boton_register) {
             System.out.println("Se ha pulsado el botón para ir a crear cuenta");
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
             MarcoCreaCuenta();
-            this.getContentPane().revalidate();   
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);   
         }
 
         //Apartado de Crear Cuenta            
@@ -92,13 +94,15 @@ public class Client extends JFrame implements ActionListener{
             this.getContentPane().invalidate();           
             MarcoInicioSesion();
             this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);
         }
         if (e.getSource()==boton_inicio) {
             System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
             MarcoInicioSesion();
-            this.getContentPane().revalidate();           
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);           
         }
 
         //Apartado de la barra
@@ -106,19 +110,22 @@ public class Client extends JFrame implements ActionListener{
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
             MarcoCalendario();
-            this.getContentPane().revalidate(); 
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true); 
         }
         if (e.getSource()==menuItem_evento) {
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
             MarcoEventos();
-            this.getContentPane().revalidate(); 
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);
         }
         if (e.getSource()==menuItem_cuenta) {
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
             MarcoCuenta();
-            this.getContentPane().revalidate(); 
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true); 
         }
 
         //Apartado de Calendario
@@ -134,6 +141,9 @@ public class Client extends JFrame implements ActionListener{
         }
 
         //Apartado de Cuenta
+        if (e.getSource()==boton_cambio_contraseña) {
+            System.out.println("Se llama a cambiar la contraseña");
+        }  
         if (e.getSource()==boton_salir) {
             System.out.println("Se llama a finalizar la aplicación");
             System.exit(0);
@@ -144,12 +154,19 @@ public class Client extends JFrame implements ActionListener{
             this.getContentPane().invalidate();           
             MarcoInicioSesion();
             this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);
         }
     }
 
     // Método que crea la interfaz correspondiente al incio de sesión
     private void MarcoInicioSesion(){
         
+        // Se configura la ventana
+        this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
+        this.setSize(280,300); //Dimensiones del JFrame (ancho,alto)
+        this.setResizable(false); //No redimensionable
+        //this.setBackground(Color.decode("#ACBFC5"));
+
         // Se crean las etiquetas y botones, y se añaden a la ventana
         JLabel label_correo_iniciosesion = new JLabel("Correo");
         label_correo_iniciosesion.setBounds(40,30,200,30);
@@ -178,16 +195,16 @@ public class Client extends JFrame implements ActionListener{
         boton_register.addActionListener(this);    
         this.add(boton_register);
 
-        //this.setBackground(Color.decode("#ACBFC5"));
-
-        // Se configura la ventana
-        this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
-        this.setSize(280,300); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(false); //No redimensionable
     }
 
     // Método que crea la interfaz correspondiente a la creación de una cuenta
     private void MarcoCreaCuenta(){
+
+        // Se configura la ventana
+        this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
+        this.setSize(290,300); //Dimensiones del JFrame (ancho,alto)
+        this.setResizable(false); //No redimensionable
+        //this.setBackground(Color.decode("#ACBFC5"));
 
         // Se crean las etiquetas y botones, y se añaden a la ventana
         JLabel label_correo = new JLabel("Correo");
@@ -221,12 +238,6 @@ public class Client extends JFrame implements ActionListener{
         boton_inicio.addActionListener(this);        
         this.add(boton_inicio);
 
-        //this.setBackground(Color.decode("#ACBFC5"));
-
-        // Se configura la ventana
-        this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
-        this.setSize(290,300); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(false); //No redimensionable
     }
 
     // Método que crea la interfaz de la sección del calendario gráfico
@@ -356,10 +367,53 @@ public class Client extends JFrame implements ActionListener{
         menu_bar=menuBar();
         this.setJMenuBar(menu_bar);
 
-        // Se crean y añaden los elementos que van a formar la interfaz
-        JLabel label_correo = new JLabel("PRUEBA");
-        label_correo.setBounds(40,30,200,30);
-        this.add(label_correo);
+        JPanel panelEventos = new JPanel();
+        panelEventos.setLayout(null);
+        panelEventos.setVisible(true);
+        panelEventos.setBackground(Color.GREEN); // Color del fondo
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 20;
+
+        JLabel label_correo = new JLabel("<html><div style='text-align: center;'>" + "Correo:" + "</div></html>");
+        label_correo.setBounds(x,y,ancho,alto);
+        label_correo.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        panelEventos.add(label_correo);
+
+        x=x+ancho+espacio_x;
+        JLabel label_correo2 = new JLabel("Correo"); //usuario.getEmail();
+        label_correo2.setBounds(x,y,ancho,alto);
+        label_correo2.setBorder(BorderFactory.createLineBorder(Color.BLACK));        
+        panelEventos.add(label_correo2);
+
+        x=borde+ancho/2;
+        y=y+alto+espacio_y;
+        boton_cambio_contraseña = new JButton("Cambiar Contraseña"); //usuario.getEmail();
+        boton_cambio_contraseña.setBounds(x,y,ancho,alto);
+        panelEventos.add(boton_cambio_contraseña);
+        
+        y=y+alto+espacio_y;
+        boton_cerrarSesion=new JButton("Cerrar Sesión");
+        boton_cerrarSesion.setBounds(x,y,ancho,alto);
+        boton_cerrarSesion.addActionListener(this);
+        panelEventos.add(boton_cerrarSesion);
+        
+        y=y+alto+espacio_y;
+        boton_salir=new JButton("Salir");
+        boton_salir.setBounds(x,y,ancho,alto);
+        boton_salir.addActionListener(this);
+        panelEventos.add(boton_salir);
+
+        x=2*borde + espacio_x + 2*ancho;
+        y = y+alto+borde;
+        panelEventos.setBounds(0,0,x,y);
+        this.add(panelEventos);
     }
 
     // Método que crea la interfaz de la sección de gestión de la cuenta del usuario
