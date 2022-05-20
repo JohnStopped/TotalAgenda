@@ -27,7 +27,7 @@ public class Client extends JFrame implements ActionListener{
     private JLabel[][] label_day_month;
 
     // Apartado Evento
-    private JButton boton_creaEvento;
+    private JButton boton_creaEvento,boton_formulario_crear_evento;
 
     //Apartado de Cuenta
     private JButton boton_cambio_contraseña, boton_salir, boton_cerrarSesion;
@@ -123,8 +123,8 @@ public class Client extends JFrame implements ActionListener{
         //Apartado de Calendario
         if (e.getSource()==boton_creaEvento) {
             System.out.println("Se va a crear un evento");
+            frameCreaEventos();
         }        
-
 
         //Apartado de Cuenta
         if (e.getSource()==boton_cambio_contraseña) {
@@ -299,8 +299,6 @@ public class Client extends JFrame implements ActionListener{
 
         panelDePestanas.setBounds(0,0,800,600);
         this.add(panelDePestanas);
-
-
     }
 
     // Método que crea la interfaz de la sección del calendario gráfico
@@ -461,6 +459,71 @@ public class Client extends JFrame implements ActionListener{
         panelEventos.add(scrollBar,BorderLayout.CENTER);
 
         return panelEventos;
+    }
+
+    private void frameCreaEventos(){
+        JDialog frame_creaEvento = new JDialog(this,true);
+        JPanel panel_creaEvento = new JPanel();
+        panel_creaEvento.setLayout(null);
+        panel_creaEvento.setVisible(true);
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 20;
+
+        // Se crean las etiquetas y botones, y se añaden a la ventana
+        //FILA1
+        JTextField field_titulo = new JTextField("Título");
+        field_titulo.setBounds(x,y,ancho,alto);
+        panel_creaEvento.add(field_titulo);
+
+        //FILA2
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_fecha = new JLabel("Fecha: ");
+        label_fecha.setBounds(x,y,ancho,alto);    
+        panel_creaEvento.add(label_fecha);
+
+        //FILA3
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_fecha_advice = new JLabel("Fecha de aviso");
+        label_fecha_advice.setBounds(x,y,ancho,alto);    
+        panel_creaEvento.add(label_fecha_advice);
+
+        //FILA4
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_nota = new JLabel("Nota: ");
+        label_nota.setBounds(x,y,ancho,alto);    
+        panel_creaEvento.add(label_nota);
+
+        //FILA5
+        x = borde;
+        y=y+alto+espacio_y;
+        JTextArea field_nota = new JTextArea();
+        field_nota.setBounds(x,y,2*ancho,5*alto);    
+        panel_creaEvento.add(field_nota);
+
+        //FILA6
+        x = borde;
+        y=y+5*alto+espacio_y;
+        boton_formulario_crear_evento = new JButton("Crear");
+        boton_formulario_crear_evento.setBounds(x,y,ancho,alto);    
+        panel_creaEvento.add(boton_formulario_crear_evento);
+
+        x = x + 2*ancho + borde;
+        y = y + alto + borde;
+        panel_creaEvento.setBounds(0,0,x,y);
+        this.add(panel_creaEvento);
+
+        frame_creaEvento.add(panel_creaEvento);
+        frame_creaEvento.setVisible(true);
     }
 
     // Método que crea la interfaz de la sección de gestión de la cuenta del usuario
