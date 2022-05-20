@@ -440,28 +440,25 @@ public class Client extends JFrame implements ActionListener{
         JPanel panelEventos = new JPanel();
         panelEventos.setLayout(new BorderLayout());
         panelEventos.setVisible(true);
-        panelEventos.setBackground(Color.GREEN); // Color del fondo
+        //panelEventos.setBackground(Color.GREEN); // Color del fondo
 
+        // Se crea la barra superiora del panel
         JPanel barraSuperior = new JPanel();
-        barraSuperior.setLayout(null);
+        barraSuperior.setLayout(new FlowLayout());
         barraSuperior.setVisible(true);
- 
-        JLabel label_anio = new JLabel(String.valueOf(anio_actual));
-        label_anio.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        barraSuperior.add(label_anio);
-
-        JLabel label_mes = new JLabel(String.valueOf(mes_actual));
-        label_mes.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        barraSuperior.add(label_mes);
         
-        JLabel label_dia = new JLabel(String.valueOf(dia_actual));
-        label_dia.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        barraSuperior.add(label_dia);
-
-        panelEventos.add(barraSuperior,BorderLayout.PAGE_START);
+        JLabel label_fecha = new JLabel(String.valueOf(dia_actual+"/"+mes_actual+"/"+anio_actual));
+        label_fecha.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        barraSuperior.add(label_fecha);
 
         boton_creaEvento = new JButton("Crear evento");
-        panelEventos.add(boton_creaEvento,BorderLayout.PAGE_END);
+        barraSuperior.add(boton_creaEvento);
+        
+        panelEventos.add(barraSuperior,BorderLayout.NORTH);
+
+        JTextArea areaIntroduccion = new JTextArea();
+        JScrollPane scrollBar = new JScrollPane(areaIntroduccion, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        panelEventos.add(scrollBar,BorderLayout.CENTER);
 
         return panelEventos;
     }
