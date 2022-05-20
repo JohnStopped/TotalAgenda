@@ -450,6 +450,7 @@ public class Client extends JFrame implements ActionListener{
         barraSuperior.add(label_fecha);
 
         boton_creaEvento = new JButton("Crear evento");
+        boton_creaEvento.addActionListener(this);
         barraSuperior.add(boton_creaEvento);
         
         panelEventos.add(barraSuperior,BorderLayout.NORTH);
@@ -462,7 +463,8 @@ public class Client extends JFrame implements ActionListener{
     }
 
     private void frameCreaEventos(){
-        JDialog frame_creaEvento = new JDialog(this,true);
+        JDialog frame_creaEvento = new JDialog(this);
+        
         JPanel panel_creaEvento = new JPanel();
         panel_creaEvento.setLayout(null);
         panel_creaEvento.setVisible(true);
@@ -474,7 +476,7 @@ public class Client extends JFrame implements ActionListener{
         int x = borde;
         int y = borde;
         int espacio_x = 10;
-        int espacio_y = 20;
+        int espacio_y = 10;
 
         // Se crean las etiquetas y botones, y se añaden a la ventana
         //FILA1
@@ -519,10 +521,11 @@ public class Client extends JFrame implements ActionListener{
 
         x = x + 2*ancho + borde;
         y = y + alto + borde;
-        panel_creaEvento.setBounds(0,0,x,y);
-        this.add(panel_creaEvento);
-
+        panel_creaEvento.setBounds(0,0,x,y); 
+        
         frame_creaEvento.add(panel_creaEvento);
+        frame_creaEvento.setSize(x,y+25);
+        frame_creaEvento.setTitle("Crear evento");
         frame_creaEvento.setVisible(true);
     }
 
@@ -541,7 +544,7 @@ public class Client extends JFrame implements ActionListener{
         int x = borde;
         int y = borde;
         int espacio_x = 10;
-        int espacio_y = 20;
+        int espacio_y = 10;
 
         JLabel label_correo = new JLabel("<html><div style='text-align: center;'>" + "Correo:" + "</div></html>");
         label_correo.setBounds(x,y,ancho,alto);
