@@ -29,7 +29,7 @@ public class Client extends JFrame implements ActionListener{
     //Apartado de Cuenta
     private JButton boton_cambio_contraseña, boton_salir, boton_cerrarSesion;
     
-    // Información 
+    //Información 
     //private User usuario;
     //private List<Event> eventos;
 
@@ -40,30 +40,30 @@ public class Client extends JFrame implements ActionListener{
     // .setText("texto"); // Para vaciarlo basta con asignar ""
     // .getText().isEmpty() // Así podemos validar si está vacío o no
 
+    // Constructor de la interfaz de la aplicación
     public Client() {
 
+        // Se crea el calendario para obtener el dia mes y año actual
         Calendar calendario = new GregorianCalendar();
         mes_actual = calendario.get(Calendar.MONTH)+1 ;
         anio_actual = calendario.get(Calendar.YEAR) ;
         dia_actual = calendario.get(Calendar.DATE) ;
 
+        // En el calendario grafico se comenzará mostrando el mes del año en el que nos encontramos
         mes_iterador = mes_actual ;
         anio_iterador = anio_actual ;         
-        //System.out.println(calendario.get(Calendar.DATE) +"-"+ calendario.get(Calendar.MONTH) +"-"+ calendario.get(Calendar.YEAR) +" "+ calendario.get(Calendar.HOUR_OF_DAY) +":"+ calendario.get(Calendar.MINUTE));
 
+        // Se configuran propiedades de la ventana
         this.setLocationRelativeTo(null); //Esto permite que la ventana aparezca al centro
         this.setLayout(null); //Layout absoluto
 
+        // Se crean la interfaz de la sección de inicio de sesión
         MarcoInicioSesion();
 
+        // Se configuran propiedades de la ventana
         //this.setMinimumSize(new Dimension(800,550)); //(ancho,alto)
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
         this.setVisible(true); //Mostrar JFrame 
-        //Instancia un objeto BorderLayout con una separacion de 15px en horizonal y vertical
-        //BorderLayout miBorderLayout = new BorderLayout(15,15);
-
-        //Uso este BorderLayout para que sea el controlador de posicionamiento de mi objeto JFrame
-        //this.setLayout(miBorderLayout);
     }
 
     // Método que implementa las acciones de cada ítem de la interfaz
@@ -147,49 +147,10 @@ public class Client extends JFrame implements ActionListener{
         }
     }
 
-    private void incrementaMesIterador(){
-        if (mes_iterador==12){
-            mes_iterador=1;
-            anio_iterador=anio_iterador+1;
-        }else{
-            mes_iterador = mes_iterador+1;
-        }
-    }
-
-    private void decrementaMesIterador(){
-        if (mes_iterador==1){
-            mes_iterador=12;
-            anio_iterador=anio_iterador-1;
-        }else{
-            mes_iterador = mes_iterador-1;
-        }
-    }
-
-    private void cambiaCalendario(){
-
-        label_anio_iterador.setText(String.valueOf(anio_iterador));
-        label_mes_iterador.setText(String.valueOf(mes_iterador));
-        int i=0;
-        int j=0;
-        int int_aux;
-        int[][] matrix = calendario.calendar(anio_iterador,mes_iterador);
-        for (i = 0; (i<6) ;i++ ){
-          for (j=0; (j<7) ;j++){
-            int_aux = matrix[i][j];
-
-            if (int_aux!=0){
-                label_day_month[i][j].setText("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>");
-            }else{
-                label_day_month[i][j].setText("");
-            }
-          }
-          
-        }
-    }
-
-
+    // Método que crea la interfaz correspondiente al incio de sesión
     private void MarcoInicioSesion(){
         
+        // Se crean las etiquetas y botones, y se añaden a la ventana
         JLabel label_correo_iniciosesion = new JLabel("Correo");
         label_correo_iniciosesion.setBounds(40,30,200,30);
         this.add(label_correo_iniciosesion);
@@ -219,14 +180,16 @@ public class Client extends JFrame implements ActionListener{
 
         //this.setBackground(Color.decode("#ACBFC5"));
 
-        // Configuramos la ventana
+        // Se configura la ventana
         this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
         this.setSize(280,300); //Dimensiones del JFrame (ancho,alto)
         this.setResizable(false); //No redimensionable
     }
 
+    // Método que crea la interfaz correspondiente a la creación de una cuenta
     private void MarcoCreaCuenta(){
 
+        // Se crean las etiquetas y botones, y se añaden a la ventana
         JLabel label_correo = new JLabel("Correo");
         label_correo.setBounds(40,30,200,30);
         this.add(label_correo);
@@ -258,25 +221,27 @@ public class Client extends JFrame implements ActionListener{
         boton_inicio.addActionListener(this);        
         this.add(boton_inicio);
 
-        this.setBackground(Color.decode("#ACBFC5"));
+        //this.setBackground(Color.decode("#ACBFC5"));
 
-        // Configuramos la ventana
+        // Se configura la ventana
         this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
         this.setSize(290,300); //Dimensiones del JFrame (ancho,alto)
         this.setResizable(false); //No redimensionable
     }
 
-
+    // Método que crea la interfaz de la sección del calendario gráfico
     private void MarcoCalendario(){
 
+        // Se configura la ventana
         this.setTitle("TotalAgenda"); //Título del JFrame
         this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
         this.setResizable(true); //Redimensionable
 
-        //Creamos la barra de menu de la ventana
+        // Se crea la barra de menu de la ventana
         menu_bar=menuBar();
         this.setJMenuBar(menu_bar);
         
+        // Se crean los elementos que forman la interfaz de esta sección y los añadimos
         int ancho = 60;
         int alto = 60;
         int x = 40;
@@ -305,11 +270,10 @@ public class Client extends JFrame implements ActionListener{
         label_mes_iterador.setBounds(x+35*3,30,35,25);    
         this.add(label_mes_iterador);
 
+        // Se crea la fila con los días del calendario grafico
         label_day_month = new JLabel[6][7];
-        int[][] matrix = calendario.calendar(anio_actual,mes_actual);
         String[] dias= {"L","M","X","J","V","S","D"};
-
-          for (j=0; (j<7) ;j++){
+        for (j=0; (j<7) ;j++){
             label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+dias[j]+"</div></html>", SwingConstants.CENTER);
 
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -317,7 +281,8 @@ public class Client extends JFrame implements ActionListener{
             this.add(label_day_month[i][j]);
         }
 
-
+        // Se crea el calendario gráfico completo con el 
+        int[][] matrix = calendario.calendar(anio_actual,mes_actual);
         for (i = 0; (i<6) ;i++ ){
           for (j=0; (j<7) ;j++){
             int_aux = matrix[i][j];
@@ -334,33 +299,81 @@ public class Client extends JFrame implements ActionListener{
           }  
         }
     }
-    
+
+    // Método que aumenta el mes del calendario que se está viendo
+    private void incrementaMesIterador(){
+        if (mes_iterador==12){
+            mes_iterador=1;
+            anio_iterador=anio_iterador+1;
+        }else{
+            mes_iterador = mes_iterador+1;
+        }
+    }
+
+    // Método que decrementa el mes del calendario que se está viendo
+    private void decrementaMesIterador(){
+        if (mes_iterador==1){
+            mes_iterador=12;
+            anio_iterador=anio_iterador-1;
+        }else{
+            mes_iterador = mes_iterador-1;
+        }
+    }
+
+    // Método que cambia el calendario de mes
+    private void cambiaCalendario(){
+
+        // Se cambia la información que se muestra en el calendario gráfico en función del mes y del año que se vayan a visualizar
+        label_anio_iterador.setText(String.valueOf(anio_iterador));
+        label_mes_iterador.setText(String.valueOf(mes_iterador));
+        int i=0;
+        int j=0;
+        int int_aux;
+        int[][] matrix = calendario.calendar(anio_iterador,mes_iterador);
+        for (i = 0; (i<6) ;i++ ){
+          for (j=0; (j<7) ;j++){
+            int_aux = matrix[i][j];
+
+            if (int_aux!=0){
+                label_day_month[i][j].setText("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>");
+            }else{
+                label_day_month[i][j].setText("");
+            }
+          }
+          
+        }
+    }
+
+    // Método que crea la interfaz de la sección de eventos    
     private void MarcoEventos(){
 
+        // Se configura la ventana
         this.setTitle("TotalAgenda"); //Título del JFrame
         this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
         this.setResizable(true); //Redimensionable
 
-        //Creamos la barra de menu de la ventana
+        // Se crea la barra de menu de la ventana
         menu_bar=menuBar();
         this.setJMenuBar(menu_bar);
 
+        // Se crean y añaden los elementos que van a formar la interfaz
         JLabel label_correo = new JLabel("PRUEBA");
         label_correo.setBounds(40,30,200,30);
         this.add(label_correo);
     }
 
+    // Método que crea la interfaz de la sección de gestión de la cuenta del usuario
     private void MarcoCuenta(){
 
         this.setTitle("TotalAgenda"); //Título del JFrame
         this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
         this.setResizable(true); //Redimensionable
 
-        //Creamos la barra de menu de la ventana
+        // Se crea la barra de menu de la ventana
         menu_bar=menuBar();
         this.setJMenuBar(menu_bar);
 
-        //Definimos las coordenadas para colocar los objetos
+        // Se definen las coordenadas para colocar los objetos
         int ancho = 200;
         int alto = 30;
         int x = 150;
@@ -389,15 +402,14 @@ public class Client extends JFrame implements ActionListener{
         boton_salir.setBounds(x+ancho/4,y+3*j,ancho,alto);
         boton_salir.addActionListener(this);
         this.add(boton_salir);
-
     }
 
-
+    // Método que crea la barra de menú de la aplicación
     public JMenuBar menuBar(){
-        //Creamos la barra de menu de la ventana
+        // Se la barra de menu de la ventana
         JMenuBar menu = new JMenuBar();
 
-        //Creamos los menuItem y se los asociamos a la barra de menu
+        // Se crean los menuItem y se los asociamos a la barra de menu
         JLabel menuFecha=new JLabel(String.valueOf(dia_actual)+"/"+String.valueOf(mes_actual)+"/"+String.valueOf(anio_actual));
         menu.add(menuFecha);
 
