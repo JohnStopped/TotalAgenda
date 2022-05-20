@@ -14,9 +14,9 @@ public class Client extends JFrame implements ActionListener{
     //Apartado de Crear Cuenta
     private JButton boton_formulario_crear_cuenta,boton_inicio;
 
-    //Apartado de la barra
-    private JMenuBar menu_bar;
-    private JMenuItem menuItem_calendario,menuItem_evento,menuItem_cuenta;
+    // Apliación
+    private JTabbedPane panelDePestanas;
+    private JPanel panelCalendario, panelEventos, panelCuenta;
 
     //Apartado de Calendario
     private JButton boton_mes_mayor,boton_mes_menor;
@@ -25,6 +25,9 @@ public class Client extends JFrame implements ActionListener{
     private int mes_actual,anio_actual,dia_actual;
     private int mes_iterador,anio_iterador;
     private JLabel[][] label_day_month;
+
+    // Apartado Evento
+    private JButton boton_creaEvento;
 
     //Apartado de Cuenta
     private JButton boton_cambio_contraseña, boton_salir, boton_cerrarSesion;
@@ -74,7 +77,7 @@ public class Client extends JFrame implements ActionListener{
             System.out.println("Se ha pulsado el botón para enviar el formulario del login");
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
-            MarcoCalendario();
+            pestañas();
             this.getContentPane().revalidate();
             this.getContentPane().setVisible(true);
         }        
@@ -105,29 +108,6 @@ public class Client extends JFrame implements ActionListener{
             this.getContentPane().setVisible(true);           
         }
 
-        //Apartado de la barra
-        if (e.getSource()==menuItem_calendario) {
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoCalendario();
-            this.getContentPane().revalidate();
-            this.getContentPane().setVisible(true); 
-        }
-        if (e.getSource()==menuItem_evento) {
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoEventos();
-            this.getContentPane().revalidate();
-            this.getContentPane().setVisible(true);
-        }
-        if (e.getSource()==menuItem_cuenta) {
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoCuenta();
-            this.getContentPane().revalidate();
-            this.getContentPane().setVisible(true); 
-        }
-
         //Apartado de Calendario
         if (e.getSource()==boton_mes_menor) {
             decrementaMesIterador();
@@ -139,6 +119,12 @@ public class Client extends JFrame implements ActionListener{
             System.out.println("Se va al mes siguiente: " + mes_iterador);
             cambiaCalendario();
         }
+
+        //Apartado de Calendario
+        if (e.getSource()==boton_creaEvento) {
+            System.out.println("Se va a crear un evento");
+        }        
+
 
         //Apartado de Cuenta
         if (e.getSource()==boton_cambio_contraseña) {
@@ -220,7 +206,7 @@ public class Client extends JFrame implements ActionListener{
 
         // Se configura la ventana
         this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
-        this.setSize(x,y+25); //Dimensiones del JFrame (ancho,alto)
+        this.setSize(x,y+25); //Dimensiones del JFrame (ancho,alto) - se le añaden 25 de alto para los del marco superior de la ventana
         this.setResizable(false); //No redimensionable
         //this.setBackground(Color.decode("#ACBFC5"));
 
@@ -290,66 +276,96 @@ public class Client extends JFrame implements ActionListener{
 
        // Se configura la ventana
         this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
-        this.setSize(x,y+25); //Dimensiones del JFrame (ancho,alto)
+        this.setSize(x,y+25); //Dimensiones del JFrame (ancho,alto) - se le añaden 25 de alto para los del marco superior de la ventana
         this.setResizable(false); //No redimensionable
         //this.setBackground(Color.decode("#ACBFC5"));
     }
 
-    // Método que crea la interfaz de la sección del calendario gráfico
-    private void MarcoCalendario(){
+    // Método para crear las pestañas de la aplicación
+    private void pestañas(){
 
         // Se configura la ventana
         this.setTitle("TotalAgenda"); //Título del JFrame
-        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
+        this.setSize(800,600); //Dimensiones del JFrame (ancho,alto) - se le añaden 25 de alto para los del marco superior de la ventana y 25 para los de la barra de menu
         this.setResizable(true); //Redimensionable
 
-        // Se crea la barra de menu de la ventana
-        menu_bar=menuBar();
-        this.setJMenuBar(menu_bar);
-        
-        // Se crean los elementos que forman la interfaz de esta sección y los añadimos
-        int ancho = 60;
-        int alto = 60;
-        int x = 40;
-        int y = 90;
+        JTabbedPane panelDePestanas = new JTabbedPane(JTabbedPane.TOP);
+        panelCalendario = PanelCalendario();
+        panelEventos = PanelEventos();
+        panelCuenta = PanelCuenta();
+        panelDePestanas.addTab("Calendario", null, panelCalendario, null);
+        panelDePestanas.addTab("Eventos", null, panelEventos, null);
+        panelDePestanas.addTab("Cuenta", null, panelCuenta, null);
+
+        panelDePestanas.setBounds(0,0,800,600);
+        this.add(panelDePestanas);
+
+
+    }
+
+    // Método que crea la interfaz de la sección del calendario gráfico
+    private JPanel PanelCalendario(){
+
+        JPanel panelCalendario = new JPanel();
+        panelCalendario.setLayout(null);
+        panelCalendario.setVisible(true);
+        panelCalendario.setBackground(Color.GREEN); // Color del fondo
+
+        // Se definen las coordenadas para colocar los objetos
+        int lado = 60;
+        int ancho = 40;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 20;
         int i = 0;
         int j = 0;
         int int_aux;
 
         boton_mes_menor = new JButton("<--");
-        boton_mes_menor.setBounds(x,30,35,25);
+        boton_mes_menor.setBounds(x,y,ancho,alto);
         boton_mes_menor.addActionListener(this);     
-        this.add(boton_mes_menor);
+        panelCalendario.add(boton_mes_menor);
 
+        x = x+ancho;
         boton_mes_mayor = new JButton("-->");
-        boton_mes_mayor.setBounds(x+35,30,35,25);
+        boton_mes_mayor.setBounds(x,y,ancho,alto);
         boton_mes_mayor.addActionListener(this);     
-        this.add(boton_mes_mayor);
-
+        panelCalendario.add(boton_mes_mayor);
+        
+        x = x+ancho+espacio_x;
         label_anio_iterador = new JLabel(String.valueOf(anio_iterador));
         label_anio_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        label_anio_iterador.setBounds(x+35*2,30,35,25);   
-        this.add(label_anio_iterador);
+        label_anio_iterador.setBounds(x,y,ancho,alto);   
+        panelCalendario.add(label_anio_iterador);
 
+        x = x+ancho;
         label_mes_iterador = new JLabel(String.valueOf(mes_iterador));
         label_mes_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        label_mes_iterador.setBounds(x+35*3,30,35,25);    
-        this.add(label_mes_iterador);
+        label_mes_iterador.setBounds(x,y,ancho,alto);    
+        panelCalendario.add(label_mes_iterador);
 
         // Se crea la fila con los días del calendario grafico
+        x = borde;
+        y = y+alto+espacio_y;
         label_day_month = new JLabel[6][7];
         String[] dias= {"L","M","X","J","V","S","D"};
         for (j=0; (j<7) ;j++){
             label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+dias[j]+"</div></html>", SwingConstants.CENTER);
 
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            label_day_month[i][j].setBounds(x+ancho*j,60,ancho,30);
-            this.add(label_day_month[i][j]);
+            label_day_month[i][j].setBounds(x,y,lado,lado/2);
+            panelCalendario.add(label_day_month[i][j]);
+            x = x+lado;
         }
 
         // Se crea el calendario gráfico completo con el 
+        y = y+lado/2;
         int[][] matrix = calendario.calendar(anio_actual,mes_actual);
         for (i = 0; (i<6) ;i++ ){
+            x = borde;
           for (j=0; (j<7) ;j++){
             int_aux = matrix[i][j];
 
@@ -360,10 +376,18 @@ public class Client extends JFrame implements ActionListener{
             }
 
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            label_day_month[i][j].setBounds(x+ancho*j,y+alto*i,ancho,alto);
-            this.add(label_day_month[i][j]);
-          }  
+            label_day_month[i][j].setBounds(x,y,lado,lado);
+            panelCalendario.add(label_day_month[i][j]);
+            x = x+lado;
+          }
+          y = y+lado;
         }
+
+        x = x+borde;
+        y = y+borde;
+        panelCalendario.setBounds(0,0,x,y);
+        
+        return panelCalendario;       
     }
 
     // Método que aumenta el mes del calendario que se está viendo
@@ -411,82 +435,44 @@ public class Client extends JFrame implements ActionListener{
     }
 
     // Método que crea la interfaz de la sección de eventos    
-    private void MarcoEventos(){
-
-        // Se configura la ventana
-        this.setTitle("TotalAgenda"); //Título del JFrame
-        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(true); //Redimensionable
-
-        // Se crea la barra de menu de la ventana
-        menu_bar=menuBar();
-        this.setJMenuBar(menu_bar);
+    private JPanel PanelEventos(){
 
         JPanel panelEventos = new JPanel();
-        panelEventos.setLayout(null);
+        panelEventos.setLayout(new BorderLayout());
         panelEventos.setVisible(true);
         panelEventos.setBackground(Color.GREEN); // Color del fondo
 
-        // Se definen las coordenadas para colocar los objetos
-        int ancho = 200;
-        int alto = 30;
-        int borde = 10;
-        int x = borde;
-        int y = borde;
-        int espacio_x = 10;
-        int espacio_y = 20;
+        JPanel barraSuperior = new JPanel();
+        barraSuperior.setLayout(null);
+        barraSuperior.setVisible(true);
+ 
+        JLabel label_anio = new JLabel(String.valueOf(anio_actual));
+        label_anio.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        barraSuperior.add(label_anio);
 
-        JLabel label_correo = new JLabel("<html><div style='text-align: center;'>" + "Correo:" + "</div></html>");
-        label_correo.setBounds(x,y,ancho,alto);
-        label_correo.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panelEventos.add(label_correo);
-
-        x=x+ancho+espacio_x;
-        JLabel label_correo2 = new JLabel("Correo"); //usuario.getEmail();
-        label_correo2.setBounds(x,y,ancho,alto);
-        label_correo2.setBorder(BorderFactory.createLineBorder(Color.BLACK));        
-        panelEventos.add(label_correo2);
-
-        x=borde+ancho/2;
-        y=y+alto+espacio_y;
-        boton_cambio_contraseña = new JButton("Cambiar Contraseña"); //usuario.getEmail();
-        boton_cambio_contraseña.setBounds(x,y,ancho,alto);
-        panelEventos.add(boton_cambio_contraseña);
+        JLabel label_mes = new JLabel(String.valueOf(mes_actual));
+        label_mes.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        barraSuperior.add(label_mes);
         
-        y=y+alto+espacio_y;
-        boton_cerrarSesion=new JButton("Cerrar Sesión");
-        boton_cerrarSesion.setBounds(x,y,ancho,alto);
-        boton_cerrarSesion.addActionListener(this);
-        panelEventos.add(boton_cerrarSesion);
-        
-        y=y+alto+espacio_y;
-        boton_salir=new JButton("Salir");
-        boton_salir.setBounds(x,y,ancho,alto);
-        boton_salir.addActionListener(this);
-        panelEventos.add(boton_salir);
+        JLabel label_dia = new JLabel(String.valueOf(dia_actual));
+        label_dia.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        barraSuperior.add(label_dia);
 
-        x=2*borde + espacio_x + 2*ancho;
-        y = y+alto+borde;
-        panelEventos.setBounds(0,0,x,y);
-        this.add(panelEventos);
+        panelEventos.add(barraSuperior,BorderLayout.PAGE_START);
+
+        boton_creaEvento = new JButton("Crear evento");
+        panelEventos.add(boton_creaEvento,BorderLayout.PAGE_END);
+
+        return panelEventos;
     }
 
     // Método que crea la interfaz de la sección de gestión de la cuenta del usuario
-    private void MarcoCuenta(){
+    private JPanel PanelCuenta(){
 
-        // Se configura la ventana
-        this.setTitle("TotalAgenda"); //Título del JFrame
-        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(true); //Redimensionable
-
-        // Se crea la barra de menu de la ventana
-        menu_bar=menuBar();
-        this.setJMenuBar(menu_bar);
-
-        JPanel panelEventos = new JPanel();
-        panelEventos.setLayout(null);
-        panelEventos.setVisible(true);
-        panelEventos.setBackground(Color.GREEN); // Color del fondo
+        JPanel panelCuenta = new JPanel();
+        panelCuenta.setLayout(null);
+        panelCuenta.setVisible(true);
+        panelCuenta.setBackground(Color.BLUE); // Color del fondo
 
         // Se definen las coordenadas para colocar los objetos
         int ancho = 200;
@@ -500,60 +486,37 @@ public class Client extends JFrame implements ActionListener{
         JLabel label_correo = new JLabel("<html><div style='text-align: center;'>" + "Correo:" + "</div></html>");
         label_correo.setBounds(x,y,ancho,alto);
         label_correo.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panelEventos.add(label_correo);
+        panelCuenta.add(label_correo);
 
         x=x+ancho+espacio_x;
         JLabel label_correo2 = new JLabel("Correo"); //usuario.getEmail();
         label_correo2.setBounds(x,y,ancho,alto);
         label_correo2.setBorder(BorderFactory.createLineBorder(Color.BLACK));        
-        panelEventos.add(label_correo2);
+        panelCuenta.add(label_correo2);
 
         x=borde+ancho/2;
         y=y+alto+espacio_y;
         boton_cambio_contraseña = new JButton("Cambiar Contraseña"); //usuario.getEmail();
         boton_cambio_contraseña.setBounds(x,y,ancho,alto);
-        panelEventos.add(boton_cambio_contraseña);
+        panelCuenta.add(boton_cambio_contraseña);
         
         y=y+alto+espacio_y;
         boton_cerrarSesion=new JButton("Cerrar Sesión");
         boton_cerrarSesion.setBounds(x,y,ancho,alto);
         boton_cerrarSesion.addActionListener(this);
-        panelEventos.add(boton_cerrarSesion);
+        panelCuenta.add(boton_cerrarSesion);
         
         y=y+alto+espacio_y;
         boton_salir=new JButton("Salir");
         boton_salir.setBounds(x,y,ancho,alto);
         boton_salir.addActionListener(this);
-        panelEventos.add(boton_salir);
+        panelCuenta.add(boton_salir);
 
         x = 2*borde + espacio_x + 2*ancho;
         y = y+alto+borde;
-        panelEventos.setBounds(0,0,x,y);
-        this.add(panelEventos);
-    }
-
-    // Método que crea la barra de menú de la aplicación
-    public JMenuBar menuBar(){
-        // Se la barra de menu de la ventana
-        JMenuBar menu = new JMenuBar();
-
-        // Se crean los menuItem y se los asociamos a la barra de menu
-        JLabel menuFecha=new JLabel(String.valueOf(dia_actual)+"/"+String.valueOf(mes_actual)+"/"+String.valueOf(anio_actual));
-        menu.add(menuFecha);
-
-        menuItem_calendario=new JMenuItem("Calendario");
-        menuItem_calendario.addActionListener(this);
-        menu.add(menuItem_calendario);
-
-        menuItem_evento=new JMenuItem("Eventos");
-        menuItem_evento.addActionListener(this);
-        menu.add(menuItem_evento);
+        panelCuenta.setBounds(0,0,x,y);
         
-        menuItem_cuenta=new JMenuItem("Cuenta");
-        menuItem_cuenta.addActionListener(this);
-        menu.add(menuItem_cuenta);
-
-        return menu;
+        return panelCuenta;
     }
 
     public static void main(String[] args) {
