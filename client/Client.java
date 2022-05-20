@@ -61,7 +61,7 @@ public class Client extends JFrame implements ActionListener{
         MarcoInicioSesion();
 
         // Se configuran propiedades de la ventana
-        //this.setMinimumSize(new Dimension(800,550)); //(ancho,alto)
+        //this.setMinimumSize(new Dimension(600,500)); //(ancho,alto)
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
         this.setVisible(true); //Mostrar JFrame 
     }
@@ -161,83 +161,138 @@ public class Client extends JFrame implements ActionListener{
     // Método que crea la interfaz correspondiente al incio de sesión
     private void MarcoInicioSesion(){
         
-        // Se configura la ventana
-        this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
-        this.setSize(280,300); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(false); //No redimensionable
-        //this.setBackground(Color.decode("#ACBFC5"));
+        JPanel panelInicioSesion = new JPanel();
+        panelInicioSesion.setLayout(null);
+        panelInicioSesion.setVisible(true);
+        panelInicioSesion.setBackground(Color.GREEN); // Color del fondo
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 20;
 
         // Se crean las etiquetas y botones, y se añaden a la ventana
+        //FILA1
         JLabel label_correo_iniciosesion = new JLabel("Correo");
-        label_correo_iniciosesion.setBounds(40,30,200,30);
-        this.add(label_correo_iniciosesion);
+        label_correo_iniciosesion.setBounds(x,y,ancho,alto);
+        panelInicioSesion.add(label_correo_iniciosesion);
 
+        x=x+ancho+espacio_x;
         JTextField field_correo_iniciosesion = new JTextField("email",20);
-        field_correo_iniciosesion.setBounds(40,60,200,30);
-        this.add(field_correo_iniciosesion);
-
+        field_correo_iniciosesion.setBounds(x,y,ancho,alto);
+        panelInicioSesion.add(field_correo_iniciosesion);
+        
+        //FILA2
+        x=borde;
+        y=y+alto+espacio_x;
         JLabel label_pass_iniciosesion = new JLabel("Contraseña");
-        label_pass_iniciosesion.setBounds(40,110,200,30);    
-        this.add(label_pass_iniciosesion);
+        label_pass_iniciosesion.setBounds(x,y,ancho,alto);    
+        panelInicioSesion.add(label_pass_iniciosesion);
 
+        x=x+ancho+espacio_x;
         JPasswordField field_pass_iniciosesion = new JPasswordField();
         //JTextField field_pass = new JTextField("contraseña",20);
-        field_pass_iniciosesion.setBounds(40,150,200,30);   
-        this.add(field_pass_iniciosesion);
+        field_pass_iniciosesion.setBounds(x,y,ancho,alto);   
+        panelInicioSesion.add(field_pass_iniciosesion);
 
+        //FILA3
+        x=borde;
+        y=y+alto+espacio_x;
         boton_formulario_login = new JButton("Inicar Sesión");
-        boton_formulario_login.setBounds(40,190,200,25);
+        boton_formulario_login.setBounds(x,y,ancho,alto-5);
         boton_formulario_login.addActionListener(this);     
-        this.add(boton_formulario_login);
-
+        panelInicioSesion.add(boton_formulario_login);
+        
+        x=x+ancho+espacio_x;
         boton_register = new JButton("Crear Cuenta");
-        boton_register.setBounds(40,230,200,25);
+        boton_register.setBounds(x,y,ancho,alto-5);
         boton_register.addActionListener(this);    
-        this.add(boton_register);
+        panelInicioSesion.add(boton_register);
+
+        x = x + ancho + borde;
+        y = y + alto-5 + borde;
+        panelInicioSesion.setBounds(0,0,x,y);
+        this.add(panelInicioSesion);
+
+        // Se configura la ventana
+        this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
+        this.setSize(x,y+25); //Dimensiones del JFrame (ancho,alto)
+        this.setResizable(false); //No redimensionable
+        //this.setBackground(Color.decode("#ACBFC5"));
 
     }
 
     // Método que crea la interfaz correspondiente a la creación de una cuenta
     private void MarcoCreaCuenta(){
 
-        // Se configura la ventana
-        this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
-        this.setSize(290,300); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(false); //No redimensionable
-        //this.setBackground(Color.decode("#ACBFC5"));
+        JPanel panelCreaCuenta = new JPanel();
+        panelCreaCuenta.setLayout(null);
+        panelCreaCuenta.setVisible(true);
+        panelCreaCuenta.setBackground(Color.GREEN); // Color del fondo
+
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 20;
+
 
         // Se crean las etiquetas y botones, y se añaden a la ventana
         JLabel label_correo = new JLabel("Correo");
-        label_correo.setBounds(40,30,200,30);
-        this.add(label_correo);
+        label_correo.setBounds(x,y,ancho,alto);
+        panelCreaCuenta.add(label_correo);
 
+        y = y + alto + espacio_y;
         JTextField field_correo = new JTextField("email",20);
-        field_correo.setBounds(40,60,200,30);
-        this.add(field_correo);
+        field_correo.setBounds(x,y,ancho,alto);
+        panelCreaCuenta.add(field_correo);
 
+        y = y + alto + espacio_y;
         JLabel label_pass = new JLabel("Contraseña");
-        label_pass.setBounds(40,110,200,30);    
-        this.add(label_pass);
+        label_pass.setBounds(x,y,ancho,alto);    
+        panelCreaCuenta.add(label_pass);
 
+        y = y + alto + espacio_y;
         JPasswordField field_pass = new JPasswordField();
         //JTextField field_pass = new JTextField("contraseña",20);
-        field_pass.setBounds(40,140,200,30);   
-        this.add(field_pass);
+        field_pass.setBounds(x,y,ancho,alto);   
+        panelCreaCuenta.add(field_pass);
 
+        y = y + alto + espacio_y;
         JPasswordField field_pass2 = new JPasswordField();
-        field_pass2.setBounds(40,170,200,30);   
-        this.add(field_pass2);
+        field_pass2.setBounds(x,y,ancho,alto);   
+        panelCreaCuenta.add(field_pass2);
 
+        y = y + alto + espacio_y;
         boton_formulario_crear_cuenta = new JButton("Crear Cuenta");
-        boton_formulario_crear_cuenta.setBounds(40,220,200,25);
+        boton_formulario_crear_cuenta.setBounds(x,y,ancho,alto-5);
         boton_formulario_crear_cuenta.addActionListener(this);     
-        this.add(boton_formulario_crear_cuenta);
+        panelCreaCuenta.add(boton_formulario_crear_cuenta);
 
+        y = y + alto + espacio_y;
         boton_inicio = new JButton("Iniciar Sesión");
-        boton_inicio.setBounds(40,250,200,25);
+        boton_inicio.setBounds(x,y,ancho,alto-5);
         boton_inicio.addActionListener(this);        
-        this.add(boton_inicio);
+        panelCreaCuenta.add(boton_inicio);
 
+        x = borde + ancho + borde;
+        y = y + alto-5 + borde;
+        panelCreaCuenta.setBounds(0,0,x,y);
+        this.add(panelCreaCuenta);
+
+       // Se configura la ventana
+        this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
+        this.setSize(x,y+25); //Dimensiones del JFrame (ancho,alto)
+        this.setResizable(false); //No redimensionable
+        //this.setBackground(Color.decode("#ACBFC5"));
     }
 
     // Método que crea la interfaz de la sección del calendario gráfico
@@ -419,6 +474,7 @@ public class Client extends JFrame implements ActionListener{
     // Método que crea la interfaz de la sección de gestión de la cuenta del usuario
     private void MarcoCuenta(){
 
+        // Se configura la ventana
         this.setTitle("TotalAgenda"); //Título del JFrame
         this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
         this.setResizable(true); //Redimensionable
@@ -427,35 +483,53 @@ public class Client extends JFrame implements ActionListener{
         menu_bar=menuBar();
         this.setJMenuBar(menu_bar);
 
+        JPanel panelEventos = new JPanel();
+        panelEventos.setLayout(null);
+        panelEventos.setVisible(true);
+        panelEventos.setBackground(Color.GREEN); // Color del fondo
+
         // Se definen las coordenadas para colocar los objetos
         int ancho = 200;
         int alto = 30;
-        int x = 150;
-        int y = 90;
-        int i = ancho+20; //Incremento de x
-        int j = alto+20;; //Incremento de y
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 20;
 
         JLabel label_correo = new JLabel("<html><div style='text-align: center;'>" + "Correo:" + "</div></html>");
         label_correo.setBounds(x,y,ancho,alto);
-        this.add(label_correo);
+        label_correo.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        panelEventos.add(label_correo);
 
+        x=x+ancho+espacio_x;
         JLabel label_correo2 = new JLabel("Correo"); //usuario.getEmail();
-        label_correo2.setBounds(x+i,y,ancho,alto);
-        this.add(label_correo2);
+        label_correo2.setBounds(x,y,ancho,alto);
+        label_correo2.setBorder(BorderFactory.createLineBorder(Color.BLACK));        
+        panelEventos.add(label_correo2);
 
+        x=borde+ancho/2;
+        y=y+alto+espacio_y;
         boton_cambio_contraseña = new JButton("Cambiar Contraseña"); //usuario.getEmail();
-        boton_cambio_contraseña.setBounds(x+ancho/4,y+j,ancho,alto);
-        this.add(boton_cambio_contraseña);
+        boton_cambio_contraseña.setBounds(x,y,ancho,alto);
+        panelEventos.add(boton_cambio_contraseña);
         
+        y=y+alto+espacio_y;
         boton_cerrarSesion=new JButton("Cerrar Sesión");
-        boton_cerrarSesion.setBounds(x+ancho/4,y+2*j,ancho,alto);
+        boton_cerrarSesion.setBounds(x,y,ancho,alto);
         boton_cerrarSesion.addActionListener(this);
-        this.add(boton_cerrarSesion);
-
+        panelEventos.add(boton_cerrarSesion);
+        
+        y=y+alto+espacio_y;
         boton_salir=new JButton("Salir");
-        boton_salir.setBounds(x+ancho/4,y+3*j,ancho,alto);
+        boton_salir.setBounds(x,y,ancho,alto);
         boton_salir.addActionListener(this);
-        this.add(boton_salir);
+        panelEventos.add(boton_salir);
+
+        x = 2*borde + espacio_x + 2*ancho;
+        y = y+alto+borde;
+        panelEventos.setBounds(0,0,x,y);
+        this.add(panelEventos);
     }
 
     // Método que crea la barra de menú de la aplicación
