@@ -8,17 +8,30 @@ import java.awt.GridLayout;
  
 public class Client extends JFrame implements ActionListener{
 
-    private JButton boton_formulario_login,boton_formulario_crear_cuenta,boton_register,boton_inicio;
+    //Apartado de Inicio de sesión
+    private JButton boton_formulario_login,boton_register;
+
+    //Apartado de Crear Cuenta
+    private JButton boton_formulario_crear_cuenta,boton_inicio;
+
+    //Apartado de la barra
     private JMenuBar menu_bar;
-    private JMenuItem menuItem_calendario, menuItem_evento, menuItem_fin;
+    private JMenuItem menuItem_calendario,menuItem_evento,menuItem_cuenta;
+
+    //Apartado de Calendario
     private JButton boton_mes_mayor,boton_mes_menor;
     private JLabel label_anio_iterador,label_mes_iterador;
-
-    //private List<Event> eventos;
+    
     private int mes_actual,anio_actual,dia_actual;
-    private int mes_iterador;
-    private int anio_iterador;
+    private int mes_iterador,anio_iterador;
     private JLabel[][] label_day_month;
+
+    //Apartado de Cuenta
+    private JButton boton_cambio_contraseña, boton_salir, boton_cerrarSesion;
+    
+    // Información 
+    //private User usuario;
+    //private List<Event> eventos;
 
 //JTextField:
     // .setBackground(); // Color del fondo
@@ -53,8 +66,42 @@ public class Client extends JFrame implements ActionListener{
         //this.setLayout(miBorderLayout);
     }
 
-    /* Método que implementa las acciones de cada ítem de menú */
+    // Método que implementa las acciones de cada ítem de la interfaz
     public void actionPerformed(ActionEvent e) {
+
+        //Apartado de Inicio de sesión      
+        if (e.getSource()==boton_formulario_login) {
+            System.out.println("Se ha pulsado el botón para enviar el formulario del login");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoCalendario();
+            this.getContentPane().revalidate();            
+        }        
+        if (e.getSource()==boton_register) {
+            System.out.println("Se ha pulsado el botón para ir a crear cuenta");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoCreaCuenta();
+            this.getContentPane().revalidate();   
+        }
+
+        //Apartado de Crear Cuenta            
+        if (e.getSource()==boton_formulario_crear_cuenta) {
+            System.out.println("Se ha pulsado el botón para enviar el formulario para crear la cuenta");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoInicioSesion();
+            this.getContentPane().revalidate();
+        }
+        if (e.getSource()==boton_inicio) {
+            System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoInicioSesion();
+            this.getContentPane().revalidate();           
+        }
+
+        //Apartado de la barra
         if (e.getSource()==menuItem_calendario) {
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
@@ -67,38 +114,14 @@ public class Client extends JFrame implements ActionListener{
             MarcoEventos();
             this.getContentPane().revalidate(); 
         }
-        if (e.getSource()==menuItem_fin) {
-            System.out.println("Se llama a finalizar la aplicación");
-            System.exit(0);
-        }        
-        if (e.getSource()==boton_inicio) {
-           System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
+        if (e.getSource()==menuItem_cuenta) {
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
-            MarcoInicioSesion();
-            this.getContentPane().revalidate();           
+            MarcoCuenta();
+            this.getContentPane().revalidate(); 
         }
-        if (e.getSource()==boton_register) {
-           System.out.println("Se ha pulsado el botón para ir a crear cuenta");
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoCreaCuenta();
-            this.getContentPane().revalidate();   
-        }                
-        if (e.getSource()==boton_formulario_login) {
-           System.out.println("Se ha pulsado el botón para enviar el formulario del login");
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoCalendario();
-            this.getContentPane().revalidate();            
-        }
-        if (e.getSource()==boton_formulario_crear_cuenta) {
-           System.out.println("Se ha pulsado el botón para enviar el formulario para crear la cuenta");
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoInicioSesion();
-            this.getContentPane().revalidate();
-        }
+
+        //Apartado de Calendario
         if (e.getSource()==boton_mes_menor) {
             decrementaMesIterador();
             System.out.println("Se va al mes anterior: " + mes_iterador);
@@ -108,6 +131,19 @@ public class Client extends JFrame implements ActionListener{
             incrementaMesIterador();
             System.out.println("Se va al mes siguiente: " + mes_iterador);
             cambiaCalendario();
+        }
+
+        //Apartado de Cuenta
+        if (e.getSource()==boton_salir) {
+            System.out.println("Se llama a finalizar la aplicación");
+            System.exit(0);
+        }   
+        if (e.getSource()==boton_cerrarSesion) {
+            System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            MarcoInicioSesion();
+            this.getContentPane().revalidate();
         }
     }
 
@@ -150,6 +186,8 @@ public class Client extends JFrame implements ActionListener{
           
         }
     }
+
+
     private void MarcoInicioSesion(){
         
         JLabel label_correo_iniciosesion = new JLabel("Correo");
@@ -185,7 +223,6 @@ public class Client extends JFrame implements ActionListener{
         this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
         this.setSize(280,300); //Dimensiones del JFrame (ancho,alto)
         this.setResizable(false); //No redimensionable
-
     }
 
     private void MarcoCreaCuenta(){
@@ -229,21 +266,6 @@ public class Client extends JFrame implements ActionListener{
         this.setResizable(false); //No redimensionable
     }
 
-    private void MarcoEventos(){
-
-        this.setTitle("TotalAgenda"); //Título del JFrame
-        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(true); //Redimensionable
-
-        //Creamos la barra de menu de la ventana
-        menu_bar=menuBar();
-        this.setJMenuBar(menu_bar);
-
-        JLabel label_correo = new JLabel("PRUEBA");
-        label_correo.setBounds(40,30,200,30);
-        this.add(label_correo);
-
-    }
 
     private void MarcoCalendario(){
 
@@ -309,12 +331,68 @@ public class Client extends JFrame implements ActionListener{
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             label_day_month[i][j].setBounds(x+ancho*j,y+alto*i,ancho,alto);
             this.add(label_day_month[i][j]);
-          }
-          
+          }  
         }
-
     }
     
+    private void MarcoEventos(){
+
+        this.setTitle("TotalAgenda"); //Título del JFrame
+        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
+        this.setResizable(true); //Redimensionable
+
+        //Creamos la barra de menu de la ventana
+        menu_bar=menuBar();
+        this.setJMenuBar(menu_bar);
+
+        JLabel label_correo = new JLabel("PRUEBA");
+        label_correo.setBounds(40,30,200,30);
+        this.add(label_correo);
+    }
+
+    private void MarcoCuenta(){
+
+        this.setTitle("TotalAgenda"); //Título del JFrame
+        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
+        this.setResizable(true); //Redimensionable
+
+        //Creamos la barra de menu de la ventana
+        menu_bar=menuBar();
+        this.setJMenuBar(menu_bar);
+
+        //Definimos las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int x = 150;
+        int y = 90;
+        int i = ancho+20; //Incremento de x
+        int j = alto+20;; //Incremento de y
+
+        JLabel label_correo = new JLabel("<html><div style='text-align: center;'>" + "Correo:" + "</div></html>");
+        label_correo.setBounds(x,y,ancho,alto);
+        this.add(label_correo);
+
+        JLabel label_correo2 = new JLabel("Correo"); //usuario.getEmail();
+        label_correo2.setBounds(x+i,y,ancho,alto);
+        this.add(label_correo2);
+
+        boton_cambio_contraseña = new JButton("Cambiar Contraseña"); //usuario.getEmail();
+        boton_cambio_contraseña.setBounds(x+ancho/4,y+j,ancho,alto);
+        this.add(boton_cambio_contraseña);
+        
+        boton_cerrarSesion=new JButton("Cerrar Sesión");
+        boton_cerrarSesion.setBounds(x+ancho/4,y+2*j,ancho,alto);
+        boton_cerrarSesion.addActionListener(this);
+        this.add(boton_cerrarSesion);
+
+        boton_salir=new JButton("Salir");
+        boton_salir.setBounds(x+ancho/4,y+3*j,ancho,alto);
+        boton_salir.addActionListener(this);
+        this.add(boton_salir);
+
+    }
+
+
     public JMenuBar menuBar(){
         //Creamos la barra de menu de la ventana
         JMenuBar menu = new JMenuBar();
@@ -331,9 +409,9 @@ public class Client extends JFrame implements ActionListener{
         menuItem_evento.addActionListener(this);
         menu.add(menuItem_evento);
         
-        menuItem_fin=new JMenuItem("Cerrar Sesión -->");
-        menuItem_fin.addActionListener(this);
-        menu.add(menuItem_fin);
+        menuItem_cuenta=new JMenuItem("Cuenta");
+        menuItem_cuenta.addActionListener(this);
+        menu.add(menuItem_cuenta);
 
         return menu;
     }
@@ -346,7 +424,6 @@ public class Client extends JFrame implements ActionListener{
         System.out.println("Se está solicitando el inicio de sesión");
 
         //Scanner input = new Scanner(System.in);
-        //input.nextInt();
-        
+        //input.nextInt(); 
     }
 }
