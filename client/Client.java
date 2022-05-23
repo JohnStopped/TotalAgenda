@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.net.http.*;
  
 public class Client extends JFrame implements ActionListener{
 
@@ -73,11 +74,7 @@ public class Client extends JFrame implements ActionListener{
         //Apartado de Inicio de sesión      
         if (e.getSource()==boton_formulario_login) {
             System.out.println("Se ha pulsado el botón para enviar el formulario del login");
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            Pestañas();
-            this.getContentPane().revalidate();
-            this.getContentPane().setVisible(true);
+            InicioSesion();
         }        
         if (e.getSource()==boton_register) {
             System.out.println("Se ha pulsado el botón para ir a crear cuenta");
@@ -149,6 +146,77 @@ public class Client extends JFrame implements ActionListener{
             this.getContentPane().revalidate();
             this.getContentPane().setVisible(true);
         }
+    }
+
+    private void InicioSesion{
+        boolean correcto = true;
+
+        HttpClient httpClient = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/initSession"))
+                .setHeader("User-Agent", "application/json") // add request header
+                .build();
+ 
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+ 
+        // print response headers
+        HttpHeaders headers = response.headers();
+        headers.map().forEach((k, v) -> System.out.println(k + ":" + v));
+ 
+        // print status code
+        System.out.println(response.statusCode());
+ 
+        // print response body
+        System.out.println(response.body());
+
+
+        // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
+        if (correcto){
+            this.getContentPane().removeAll();
+            this.getContentPane().invalidate();           
+            Pestañas();
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);                
+        }else{
+            FrameError("El email o la contraseña son incorrectos");
+        }
+
+    }
+
+
+    private void FrameError(String cadena){
+        JDialog frameError = new JDialog(this);
+        
+        JPanel panelError = new JPanel();
+        panelError.setLayout(null);
+        panelError.setVisible(true);
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 10;
+
+        JLabel label_error = new JLabel(cadena);
+        comboColor.setBounds(x,y,2*ancho,alto);
+        panelError.add(comboColor);
+
+        x = x + 2*ancho + borde;
+        y = y + alto + borde;
+        panelError.setBounds(0,0,x,y); 
+        
+        frameError.add(panelError);
+        frameError.setSize(x,y+25);
+        frameError.setTitle("Crear evento");
+        frameError.setVisible(true);  
     }
 
     // Método que crea la interfaz correspondiente al incio de sesión
@@ -674,12 +742,8 @@ public class Client extends JFrame implements ActionListener{
 
     public static void main(String[] args) {
         System.out.println("La aplicación empieza");
-        
+
         Client ventana = new Client();
 
-        System.out.println("Se está solicitando el inicio de sesión");
-
-        //Scanner input = new Scanner(System.in);
-        //input.nextInt(); 
     }
 }
