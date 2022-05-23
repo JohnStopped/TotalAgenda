@@ -16,7 +16,7 @@ def lambda_handler(event, context):
         "session-id": 0
     }
     
-    #Si el formato no es correcto no entramos a realizar la funcion
+    #If format isn't correct function will not continue
     if ('email' in event and 'passwd' in event and len(list(event))==2):
         conn = psql.connect(dbname="BaseDatosSDSW", user="functionsuser", password="ferrariYaFallo", host="bbdd-totalagenda.c0fmdhhpll94.eu-west-3.rds.amazonaws.com", port="54321 ")
         cur = conn.cursor()
