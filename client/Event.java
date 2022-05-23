@@ -8,18 +8,18 @@ class Event{
     private String email;
     private Calendar date;
     private Calendar advice_date;
-    private String name;
+    private String titulo;
     private String color;
     private String note;
 
     Event(){}
     
-    Event(int id, String email, Calendar date, Calendar advice_date, String name, String color, String note) {
+    Event(int id, String email, Calendar date, Calendar advice_date, String titulo, String color, String note) {
         this.id = id;
         this.email = email;
         this.date = date;
         this.advice_date = advice_date;
-        this.name = name;
+        this.titulo = titulo;
         this.color = color;
         this.note = note;
     }
@@ -69,15 +69,15 @@ class Event{
         return this.advice_date;
     }
 
-    //name
-    public void setName(String name){
+    //titulo
+    public void setTitulo(String titulo){
 
-        this.name = name;
+        this.titulo = titulo;
     }
 
-    public String getName(){
+    public String getTitulo(){
 
-        return this.name;
+        return this.titulo;
     }
 
     //color
@@ -104,7 +104,7 @@ class Event{
 
     //toString
     public String toString(){
-        return (date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" "+ name);
+        return (date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" "+ titulo);
     }
 
 }

@@ -1,12 +1,20 @@
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import java.awt.*;
+//import java.awt.*;
+import java.awt.Color;
+import java.awt.Component.*;
 import java.awt.event.*;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.net.http.*;
- 
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+
 public class Client extends JFrame implements ActionListener{
 
     //Apartado de Inicio de sesión
@@ -29,13 +37,16 @@ public class Client extends JFrame implements ActionListener{
 
     // Apartado Evento
     private JButton boton_creaEvento,boton_formulario_crear_evento;
-    private JComboBox<String> comboColor;
+    //private JComboBox<String> comboColor,comboMesFecha,comboMesRecordatorio;
+    //private JTextField anio_fecha,anio_recordatorio,dia_fecha,dia_actual,field_titulo;
+    //private JTextArea field_nota;
+
     //Apartado de Cuenta
     private JButton boton_modifica_credenciales, boton_salir, boton_cerrarSesion;
     
     //Información 
-    //private User usuario;
-    //private List<Event> eventos;
+    private User usuario;
+    private List<Event> eventos;
 
 //JTextField:
     // .setBackground(); // Color del fondo
@@ -46,7 +57,7 @@ public class Client extends JFrame implements ActionListener{
 
     // Constructor de la interfaz de la aplicación
     public Client() {
-
+        eventos = new ArrayList();
         // Se crea el calendario para obtener el dia mes y año actual
         Calendar calendario = new GregorianCalendar();
         mes_actual = calendario.get(Calendar.MONTH)+1 ;
@@ -125,8 +136,6 @@ public class Client extends JFrame implements ActionListener{
         }
         if (e.getSource()==boton_formulario_crear_evento) {
             System.out.println("Se crea un evento");
-            // comboColor.getSelectedItem();
-            //.getText().isEmpty() // Así podemos validar si está vacío o no
         }        
         //Apartado de Cuenta
         if (e.getSource()==boton_modifica_credenciales) {
@@ -148,9 +157,9 @@ public class Client extends JFrame implements ActionListener{
         }
     }
 
-    private void InicioSesion{
+    private void InicioSesion(){
         boolean correcto = true;
-
+/*
         HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
             .connectTimeout(Duration.ofSeconds(10))
@@ -174,7 +183,7 @@ public class Client extends JFrame implements ActionListener{
         // print response body
         System.out.println(response.body());
 
-
+*/
         // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
         if (correcto){
             this.getContentPane().removeAll();
@@ -206,8 +215,8 @@ public class Client extends JFrame implements ActionListener{
         int espacio_y = 10;
 
         JLabel label_error = new JLabel(cadena);
-        comboColor.setBounds(x,y,2*ancho,alto);
-        panelError.add(comboColor);
+        label_error.setBounds(x,y,2*ancho,alto);
+        panelError.add(label_error);
 
         x = x + 2*ancho + borde;
         y = y + alto + borde;
@@ -526,7 +535,7 @@ public class Client extends JFrame implements ActionListener{
         panelCreaEvento.setVisible(true);
 
         // Se definen las coordenadas para colocar los objetos
-        int ancho = 200;
+        int ancho = 120;
         int alto = 30;
         int borde = 10;
         int x = borde;
@@ -537,14 +546,14 @@ public class Client extends JFrame implements ActionListener{
         // Se crean las etiquetas y botones, y se añaden a la ventana
         //FILA1
         JTextField field_titulo = new JTextField("Título");
-        field_titulo.setBounds(x,y,ancho,alto);
+        field_titulo.setBounds(x,y,2*ancho,alto);
         panelCreaEvento.add(field_titulo);
 
-        x = x+ancho+espacio_x*2;
-        String[] colores = {"rojo","verde","azul","amarillo","naranja","negro","gris"};
-        comboColor = new JComboBox<String>(colores);
-        comboColor.setBounds(x,y,ancho/2,alto);
-        panelCreaEvento.add(comboColor);
+        x = x+2*ancho+espacio_x*2;
+        String[] colores = {"blanco","rojo","verde","azul","amarillo","naranja","negro","gris"};
+        JComboBox<String> menuColores = new JComboBox<String>(colores);
+        menuColores.setBounds(x,y,ancho*2/3,alto);
+        panelCreaEvento.add(menuColores);
 
         //FILA2
         x = borde;
@@ -555,27 +564,70 @@ public class Client extends JFrame implements ActionListener{
 
         x = x+ancho+espacio_x;
         JTextField anio_fecha = new JTextField(String.valueOf(anio_actual));
-        anio_fecha.setBounds(x,y,ancho,alto);
+        anio_fecha.setBounds(x,y,ancho/3,alto);
         panelCreaEvento.add(anio_fecha);
         
-        x = x+ancho+espacio_x;
-        String[] meses = {"enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"};
-        JComboBox<String> comboMeseFecha = new JComboBox<String>(meses);
-        comboMeseFecha.setBounds(x,y,ancho,alto);
-        panelCreaEvento.add(comboMeseFecha);
+        x = x+ancho/3+espacio_x;
+        JTextField mes_fecha = new JTextField(String.valueOf(mes_actual));
+        mes_fecha.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(mes_fecha);
 
-        x = x+ancho+espacio_x;
-        String[] dias = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"};
-        JComboBox<String> dia_fecha = new JComboBox<String>(dias);
-        dia_fecha.setBounds(x,y,ancho,alto);
-        panelCreaEvento.add(dia_fecha);        
+        x = x+ancho/3+espacio_x;
+        JTextField dia_fecha = new JTextField(String.valueOf(dia_actual));
+        dia_fecha.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(dia_fecha);
+
+        x = x+ancho/3+2*espacio_x;
+        JTextField hora_fecha = new JTextField();
+        hora_fecha.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(hora_fecha); 
+
+        x = x+ancho/3;
+        JLabel label_sep = new JLabel(":");
+        label_sep.setBounds(x,y,10,alto);    
+        panelCreaEvento.add(label_sep);
+
+        x = x+10;                
+        JTextField min_fecha = new JTextField();
+        min_fecha.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(min_fecha);
 
         //FILA3
         x = borde;
         y=y+alto+espacio_y;
-        JLabel label_fecha_advice = new JLabel("Fecha de aviso: ");
-        label_fecha_advice.setBounds(x,y,ancho,alto);    
-        panelCreaEvento.add(label_fecha_advice);
+        JLabel label_recordatorio = new JLabel("Fecha de aviso: ");
+        label_recordatorio.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_recordatorio);
+
+        x = x+ancho+espacio_x;
+        JTextField anio_recordatorio = new JTextField();
+        anio_recordatorio.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(anio_recordatorio);
+        
+        x = x+ancho/3+espacio_x;
+        JTextField mes_recordatorio = new JTextField();
+        mes_recordatorio.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(mes_recordatorio);
+
+        x = x+ancho/3+espacio_x;
+        JTextField dia_recordatorio = new JTextField();
+        dia_recordatorio.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(dia_recordatorio);        
+
+        x = x+ancho/3+2*espacio_x;
+        JTextField hora_recordatorio = new JTextField();
+        hora_recordatorio.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(hora_recordatorio); 
+
+        x = x+ancho/3;
+        JLabel label_sep2 = new JLabel(":");
+        label_sep2.setBounds(x,y,10,alto);    
+        panelCreaEvento.add(label_sep2);
+
+        x = x+10;                
+        JTextField min_recordatorio = new JTextField();
+        min_recordatorio.setBounds(x,y,ancho/3,alto);
+        panelCreaEvento.add(min_recordatorio);
 
         //FILA4
         x = borde;
@@ -588,17 +640,36 @@ public class Client extends JFrame implements ActionListener{
         x = borde;
         y=y+alto+espacio_y;
         JTextArea field_nota = new JTextArea();
-        field_nota.setBounds(x,y,2*ancho,5*alto);    
+        field_nota.setBounds(x,y,3*ancho,5*alto);    
         panelCreaEvento.add(field_nota);
 
         //FILA6
         x = borde;
         y=y+5*alto+espacio_y;
         boton_formulario_crear_evento = new JButton("Crear");
-        boton_formulario_crear_evento.setBounds(x,y,ancho,alto);    
+        boton_formulario_crear_evento.setBounds(x,y,ancho,alto);
+        boton_formulario_crear_evento.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                if (anio_fecha.getText().isEmpty() || dia_fecha.getText().isEmpty() || field_titulo.getText().isEmpty() || hora_fecha.getText().isEmpty() || min_fecha.getText().isEmpty()){
+                    FrameError("Hay campos obligatorios vacíos");
+                }else{
+                    Event evento = new Event();
+                    evento.setTitulo(field_titulo.getText());
+                    evento.setColor((String) menuColores.getSelectedItem());
+                    Integer auxinteger = new Integer(0);
+                    evento.setDate(new GregorianCalendar(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
+                    evento.setNote(field_nota.getText());
+                    if(!anio_recordatorio.getText().isEmpty() && !mes_recordatorio.getText().isEmpty() && !dia_recordatorio.getText().isEmpty() && !hora_recordatorio.getText().isEmpty() && !min_recordatorio.getText().isEmpty()){
+                        evento.setAdvice_date(new GregorianCalendar(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
+                    }
+                    eventos.add(evento);
+                }
+            }
+        }); 
+
         panelCreaEvento.add(boton_formulario_crear_evento);
 
-        x = x + 2*ancho + borde;
+        x = x + 3*ancho + borde;
         y = y + alto + borde;
         panelCreaEvento.setBounds(0,0,x,y); 
         

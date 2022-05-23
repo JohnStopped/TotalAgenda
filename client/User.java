@@ -35,6 +35,6 @@ class User{
     }
 
     public String toString(){
-        return (num2str(idSesion)+"-"+email);
+        return (String.valueOf(idSesion)+"-"+email);
     }
 }
