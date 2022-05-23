@@ -16,7 +16,7 @@ def lambda_handler(event, context):
         "session-id": 0
     }
     
-    #If format isn't correct function will not continue
+    #If format isn't correct function will not con
     if ('email' in event and 'passwd' in event and len(list(event))==2):
         conn = psql.connect(dbname="BaseDatosSDSW", user="functionsuser", password="ferrariYaFallo", host="bbdd-totalagenda.c0fmdhhpll94.eu-west-3.rds.amazonaws.com", port="54321 ")
         cur = conn.cursor()
@@ -57,6 +57,7 @@ def lambda_handler(event, context):
                     "desc": "Password sent is wrong",
                     "session-id": 0
                 }
+               
         else:
             print ("Email sent doesn't exit")
             response = {
@@ -64,7 +65,16 @@ def lambda_handler(event, context):
                 "desc": "Email sent doesn't exit",
                 "session-id": 0
             }
-    conn.commit()
-    cur.close()
-    conn.close()
-    return response
+            
+        conn.commit()
+        cur.close()
+        conn.close()     
+    
+    return {
+        "isBase64Encoded": False,
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": str(response)
+    }
