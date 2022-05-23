@@ -28,7 +28,7 @@ public class Client extends JFrame implements ActionListener{
 
     // Apartado Evento
     private JButton boton_creaEvento,boton_formulario_crear_evento;
-
+    private JComboBox<String> comboColor;
     //Apartado de Cuenta
     private JButton boton_cambio_contraseña, boton_salir, boton_cerrarSesion;
     
@@ -120,12 +120,16 @@ public class Client extends JFrame implements ActionListener{
             cambiaCalendario();
         }
 
-        //Apartado de Calendario
+        //Apartado de creación de eventos
         if (e.getSource()==boton_creaEvento) {
-            System.out.println("Se va a crear un evento");
+            System.out.println("Se abre la ventana para crear un evento");
             frameCreaEventos();
+        }
+        if (e.getSource()==boton_formulario_crear_evento) {
+            System.out.println("Se crea un evento");
+            // comboColor.getSelectedItem();
+            //.getText().isEmpty() // Así podemos validar si está vacío o no
         }        
-
         //Apartado de Cuenta
         if (e.getSource()==boton_cambio_contraseña) {
             System.out.println("Se llama a cambiar la contraseña");
@@ -168,7 +172,7 @@ public class Client extends JFrame implements ActionListener{
         panelInicioSesion.add(label_correo_iniciosesion);
 
         x=x+ancho+espacio_x;
-        JTextField field_correo_iniciosesion = new JTextField("email",20);
+        JTextField field_correo_iniciosesion = new JTextField();
         field_correo_iniciosesion.setBounds(x,y,ancho,alto);
         panelInicioSesion.add(field_correo_iniciosesion);
         
@@ -181,7 +185,6 @@ public class Client extends JFrame implements ActionListener{
 
         x=x+ancho+espacio_x;
         JPasswordField field_pass_iniciosesion = new JPasswordField();
-        //JTextField field_pass = new JTextField("contraseña",20);
         field_pass_iniciosesion.setBounds(x,y,ancho,alto);   
         panelInicioSesion.add(field_pass_iniciosesion);
 
@@ -237,7 +240,7 @@ public class Client extends JFrame implements ActionListener{
         panelCreaCuenta.add(label_correo);
 
         y = y + alto + espacio_y;
-        JTextField field_correo = new JTextField("email",20);
+        JTextField field_correo = new JTextField();
         field_correo.setBounds(x,y,ancho,alto);
         panelCreaCuenta.add(field_correo);
 
@@ -484,6 +487,12 @@ public class Client extends JFrame implements ActionListener{
         field_titulo.setBounds(x,y,ancho,alto);
         panel_creaEvento.add(field_titulo);
 
+        x = x+ancho+espacio_x*2;
+        String[] colores = {"rojo","verde","azul","amarillo","naranja","negro","gris"};
+        comboColor = new JComboBox<String>(colores);
+        comboColor.setBounds(x,y,ancho/2,alto);
+        panel_creaEvento.add(comboColor);
+
         //FILA2
         x = borde;
         y=y+alto+espacio_y;
@@ -494,7 +503,7 @@ public class Client extends JFrame implements ActionListener{
         //FILA3
         x = borde;
         y=y+alto+espacio_y;
-        JLabel label_fecha_advice = new JLabel("Fecha de aviso");
+        JLabel label_fecha_advice = new JLabel("Fecha de aviso: ");
         label_fecha_advice.setBounds(x,y,ancho,alto);    
         panel_creaEvento.add(label_fecha_advice);
 
