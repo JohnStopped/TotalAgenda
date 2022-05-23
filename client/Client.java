@@ -14,20 +14,23 @@ public class Client extends JFrame implements ActionListener{
     //Apartado de Crear Cuenta
     private JButton boton_formulario_crear_cuenta,boton_inicio;
 
-    //Apartado de la barra
-    private JMenuBar menu_bar;
-    private JMenuItem menuItem_calendario,menuItem_evento,menuItem_cuenta;
+    // Apliación
+    private JTabbedPane panelDePestanas;
+    private JPanel panelCalendario, panelEventos, panelCuenta;
 
     //Apartado de Calendario
     private JButton boton_mes_mayor,boton_mes_menor;
-    private JLabel label_anio_iterador,label_mes_iterador;
+    private JLabel label_fecha_iterador;
     
     private int mes_actual,anio_actual,dia_actual;
     private int mes_iterador,anio_iterador;
     private JLabel[][] label_day_month;
 
+    // Apartado Evento
+    private JButton boton_creaEvento,boton_formulario_crear_evento;
+    private JComboBox<String> comboColor;
     //Apartado de Cuenta
-    private JButton boton_cambio_contraseña, boton_salir, boton_cerrarSesion;
+    private JButton boton_modifica_credenciales, boton_salir, boton_cerrarSesion;
     
     //Información 
     //private User usuario;
@@ -55,13 +58,11 @@ public class Client extends JFrame implements ActionListener{
 
         // Se configuran propiedades de la ventana
         this.setLocationRelativeTo(null); //Esto permite que la ventana aparezca al centro
-        this.setLayout(null); //Layout absoluto
-
+        this.setLayout(new BorderLayout()); //Layout absoluto
+        this.setSize(800,600);
+        this.setResizable(false); //No redimensionable
         // Se crean la interfaz de la sección de inicio de sesión
-        MarcoInicioSesion();
-
-        // Se configuran propiedades de la ventana
-        //this.setMinimumSize(new Dimension(800,550)); //(ancho,alto)
+        this.add(PanelInicioSesion(),BorderLayout.CENTER);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
         this.setVisible(true); //Mostrar JFrame 
     }
@@ -74,15 +75,18 @@ public class Client extends JFrame implements ActionListener{
             System.out.println("Se ha pulsado el botón para enviar el formulario del login");
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
-            MarcoCalendario();
-            this.getContentPane().revalidate();            
+            Pestañas();
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);
         }        
         if (e.getSource()==boton_register) {
             System.out.println("Se ha pulsado el botón para ir a crear cuenta");
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
-            MarcoCreaCuenta();
-            this.getContentPane().revalidate();   
+            this.add(PanelCreaCuenta(),BorderLayout.CENTER);
+            this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);   
         }
 
         //Apartado de Crear Cuenta            
@@ -90,35 +94,19 @@ public class Client extends JFrame implements ActionListener{
             System.out.println("Se ha pulsado el botón para enviar el formulario para crear la cuenta");
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
-            MarcoInicioSesion();
+            this.add(PanelInicioSesion(),BorderLayout.CENTER);
+            this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
             this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);
         }
         if (e.getSource()==boton_inicio) {
             System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
-            MarcoInicioSesion();
-            this.getContentPane().revalidate();           
-        }
-
-        //Apartado de la barra
-        if (e.getSource()==menuItem_calendario) {
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoCalendario();
-            this.getContentPane().revalidate(); 
-        }
-        if (e.getSource()==menuItem_evento) {
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoEventos();
-            this.getContentPane().revalidate(); 
-        }
-        if (e.getSource()==menuItem_cuenta) {
-            this.getContentPane().removeAll();
-            this.getContentPane().invalidate();           
-            MarcoCuenta();
-            this.getContentPane().revalidate(); 
+            this.add(PanelInicioSesion(),BorderLayout.CENTER);
+            this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
+            this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);          
         }
 
         //Apartado de Calendario
@@ -133,7 +121,21 @@ public class Client extends JFrame implements ActionListener{
             cambiaCalendario();
         }
 
+        //Apartado de creación de eventos
+        if (e.getSource()==boton_creaEvento) {
+            System.out.println("Se abre la ventana para crear un evento");
+            FrameCreaEventos();
+        }
+        if (e.getSource()==boton_formulario_crear_evento) {
+            System.out.println("Se crea un evento");
+            // comboColor.getSelectedItem();
+            //.getText().isEmpty() // Así podemos validar si está vacío o no
+        }        
         //Apartado de Cuenta
+        if (e.getSource()==boton_modifica_credenciales) {
+            System.out.println("Se llama a cambiar la contraseña");
+            FrameModificaCredenciales();
+        }  
         if (e.getSource()==boton_salir) {
             System.out.println("Se llama a finalizar la aplicación");
             System.exit(0);
@@ -142,148 +144,216 @@ public class Client extends JFrame implements ActionListener{
             System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
-            MarcoInicioSesion();
+            this.add(PanelInicioSesion(),BorderLayout.CENTER);
+            this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
             this.getContentPane().revalidate();
+            this.getContentPane().setVisible(true);
         }
     }
 
     // Método que crea la interfaz correspondiente al incio de sesión
-    private void MarcoInicioSesion(){
+    private JPanel PanelInicioSesion(){
         
+        JPanel panelInicioSesion = new JPanel();
+        panelInicioSesion.setLayout(null);
+        panelInicioSesion.setVisible(true);
+        //panelInicioSesion.setBackground(Color.GREEN); // Color del fondo
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde_x = 192;
+        int borde_y = 200;
+        int x = borde_x;
+        int y = borde_y;
+        int espacio_x = 10;
+        int espacio_y = 20;
+
         // Se crean las etiquetas y botones, y se añaden a la ventana
+        //FILA1
         JLabel label_correo_iniciosesion = new JLabel("Correo");
-        label_correo_iniciosesion.setBounds(40,30,200,30);
-        this.add(label_correo_iniciosesion);
+        label_correo_iniciosesion.setBounds(x,y,ancho,alto);
+        panelInicioSesion.add(label_correo_iniciosesion);
 
-        JTextField field_correo_iniciosesion = new JTextField("email",20);
-        field_correo_iniciosesion.setBounds(40,60,200,30);
-        this.add(field_correo_iniciosesion);
-
+        x=x+ancho+espacio_x;
+        JTextField field_correo_iniciosesion = new JTextField();
+        field_correo_iniciosesion.setBounds(x,y,ancho,alto);
+        panelInicioSesion.add(field_correo_iniciosesion);
+        
+        //FILA2
+        x=borde_x;
+        y=y+alto+espacio_x;
         JLabel label_pass_iniciosesion = new JLabel("Contraseña");
-        label_pass_iniciosesion.setBounds(40,110,200,30);    
-        this.add(label_pass_iniciosesion);
+        label_pass_iniciosesion.setBounds(x,y,ancho,alto);    
+        panelInicioSesion.add(label_pass_iniciosesion);
 
+        x=x+ancho+espacio_x;
         JPasswordField field_pass_iniciosesion = new JPasswordField();
-        //JTextField field_pass = new JTextField("contraseña",20);
-        field_pass_iniciosesion.setBounds(40,150,200,30);   
-        this.add(field_pass_iniciosesion);
+        field_pass_iniciosesion.setBounds(x,y,ancho,alto);   
+        panelInicioSesion.add(field_pass_iniciosesion);
 
+        //FILA3
+        x=borde_x;
+        y=y+alto+espacio_x;
         boton_formulario_login = new JButton("Inicar Sesión");
-        boton_formulario_login.setBounds(40,190,200,25);
+        boton_formulario_login.setBounds(x,y,ancho,alto-5);
         boton_formulario_login.addActionListener(this);     
-        this.add(boton_formulario_login);
-
+        panelInicioSesion.add(boton_formulario_login);
+        
+        x=x+ancho+espacio_x;
         boton_register = new JButton("Crear Cuenta");
-        boton_register.setBounds(40,230,200,25);
+        boton_register.setBounds(x,y,ancho,alto-5);
         boton_register.addActionListener(this);    
-        this.add(boton_register);
+        panelInicioSesion.add(boton_register);
 
-        //this.setBackground(Color.decode("#ACBFC5"));
+        x = x + ancho + borde_x;
+        y = y + alto-5 + borde_y;
+        panelInicioSesion.setBounds(0,0,x,y);
 
-        // Se configura la ventana
-        this.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
-        this.setSize(280,300); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(false); //No redimensionable
+        return panelInicioSesion;
     }
 
     // Método que crea la interfaz correspondiente a la creación de una cuenta
-    private void MarcoCreaCuenta(){
+    private JPanel PanelCreaCuenta(){
+
+        JPanel panelCreaCuenta = new JPanel();
+        panelCreaCuenta.setLayout(null);
+        panelCreaCuenta.setVisible(true);
+        //panelCreaCuenta.setBackground(Color.GREEN); // Color del fondo
+
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde_x = 300;
+        int borde_y = 100;
+        int x = borde_x;
+        int y = borde_y;
+        int espacio_x = 10;
+        int espacio_y = 20;
 
         // Se crean las etiquetas y botones, y se añaden a la ventana
         JLabel label_correo = new JLabel("Correo");
-        label_correo.setBounds(40,30,200,30);
-        this.add(label_correo);
+        label_correo.setBounds(x,y,ancho,alto);
+        panelCreaCuenta.add(label_correo);
 
-        JTextField field_correo = new JTextField("email",20);
-        field_correo.setBounds(40,60,200,30);
-        this.add(field_correo);
+        y = y + alto + espacio_y;
+        JTextField field_correo = new JTextField();
+        field_correo.setBounds(x,y,ancho,alto);
+        panelCreaCuenta.add(field_correo);
 
+        y = y + alto + espacio_y;
         JLabel label_pass = new JLabel("Contraseña");
-        label_pass.setBounds(40,110,200,30);    
-        this.add(label_pass);
+        label_pass.setBounds(x,y,ancho,alto);    
+        panelCreaCuenta.add(label_pass);
 
+        y = y + alto + espacio_y;
         JPasswordField field_pass = new JPasswordField();
         //JTextField field_pass = new JTextField("contraseña",20);
-        field_pass.setBounds(40,140,200,30);   
-        this.add(field_pass);
+        field_pass.setBounds(x,y,ancho,alto);   
+        panelCreaCuenta.add(field_pass);
 
+        y = y + alto + espacio_y;
         JPasswordField field_pass2 = new JPasswordField();
-        field_pass2.setBounds(40,170,200,30);   
-        this.add(field_pass2);
+        field_pass2.setBounds(x,y,ancho,alto);   
+        panelCreaCuenta.add(field_pass2);
 
+        y = y + alto + espacio_y;
         boton_formulario_crear_cuenta = new JButton("Crear Cuenta");
-        boton_formulario_crear_cuenta.setBounds(40,220,200,25);
+        boton_formulario_crear_cuenta.setBounds(x,y,ancho,alto-5);
         boton_formulario_crear_cuenta.addActionListener(this);     
-        this.add(boton_formulario_crear_cuenta);
+        panelCreaCuenta.add(boton_formulario_crear_cuenta);
 
+        y = y + alto + espacio_y;
         boton_inicio = new JButton("Iniciar Sesión");
-        boton_inicio.setBounds(40,250,200,25);
+        boton_inicio.setBounds(x,y,ancho,alto-5);
         boton_inicio.addActionListener(this);        
-        this.add(boton_inicio);
+        panelCreaCuenta.add(boton_inicio);
 
-        //this.setBackground(Color.decode("#ACBFC5"));
+        x = borde_x + ancho + borde_x;
+        y = y + alto-5 + borde_y;
+        panelCreaCuenta.setBounds(0,0,x,y);
 
-        // Se configura la ventana
-        this.setTitle("TotalAgenda - Crear Cuenta"); //Título del JFrame
-        this.setSize(290,300); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(false); //No redimensionable
+        return panelCreaCuenta;
     }
 
-    // Método que crea la interfaz de la sección del calendario gráfico
-    private void MarcoCalendario(){
+    // Método para crear las Pestañas de la aplicación
+    private void Pestañas(){
 
         // Se configura la ventana
         this.setTitle("TotalAgenda"); //Título del JFrame
-        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
+        this.setSize(800,600); //Dimensiones del JFrame (ancho,alto) - se le añaden 25 de alto para los del marco superior de la ventana y 25 para los de la barra de menu
         this.setResizable(true); //Redimensionable
 
-        // Se crea la barra de menu de la ventana
-        menu_bar=menuBar();
-        this.setJMenuBar(menu_bar);
-        
-        // Se crean los elementos que forman la interfaz de esta sección y los añadimos
+        JTabbedPane panelDePestanas = new JTabbedPane(JTabbedPane.TOP);
+        panelCalendario = PanelCalendario();
+        panelEventos = PanelEventos();
+        panelCuenta = PanelCuenta();
+        panelDePestanas.addTab("Calendario", null, panelCalendario, null);
+        panelDePestanas.addTab("Eventos", null, panelEventos, null);
+        panelDePestanas.addTab("Cuenta", null, panelCuenta, null);
+
+        panelDePestanas.setBounds(0,0,800,600);
+        this.add(panelDePestanas);
+    }
+
+    // Método que crea la interfaz de la sección del calendario gráfico
+    private JPanel PanelCalendario(){
+
+        JPanel panelCalendario = new JPanel();
+        panelCalendario.setLayout(null);
+        panelCalendario.setVisible(true);
+        //panelCalendario.setBackground(Color.GREEN); // Color del fondo
+
+        // Se definen las coordenadas para colocar los objetos
+        int lado = 60;
         int ancho = 60;
-        int alto = 60;
-        int x = 40;
-        int y = 90;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 20;
         int i = 0;
         int j = 0;
         int int_aux;
 
-        boton_mes_menor = new JButton("<--");
-        boton_mes_menor.setBounds(x,30,35,25);
+        boton_mes_menor = new JButton("ant");
+        boton_mes_menor.setBounds(x,y,ancho,alto);
         boton_mes_menor.addActionListener(this);     
-        this.add(boton_mes_menor);
+        panelCalendario.add(boton_mes_menor);
 
-        boton_mes_mayor = new JButton("-->");
-        boton_mes_mayor.setBounds(x+35,30,35,25);
+        x = x+ancho;
+        boton_mes_mayor = new JButton("sig");
+        boton_mes_mayor.setBounds(x,y,ancho,alto);
         boton_mes_mayor.addActionListener(this);     
-        this.add(boton_mes_mayor);
+        panelCalendario.add(boton_mes_mayor);
 
-        label_anio_iterador = new JLabel(String.valueOf(anio_iterador));
-        label_anio_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        label_anio_iterador.setBounds(x+35*2,30,35,25);   
-        this.add(label_anio_iterador);
-
-        label_mes_iterador = new JLabel(String.valueOf(mes_iterador));
-        label_mes_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        label_mes_iterador.setBounds(x+35*3,30,35,25);    
-        this.add(label_mes_iterador);
+        x = x+ancho+espacio_x;
+        label_fecha_iterador = new JLabel(String.valueOf(mes_iterador)+"/"+String.valueOf(anio_iterador));
+        label_fecha_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        label_fecha_iterador.setBounds(x,y,ancho,alto);   
+        panelCalendario.add(label_fecha_iterador);
 
         // Se crea la fila con los días del calendario grafico
+        x = borde;
+        y = y+alto+espacio_y;
         label_day_month = new JLabel[6][7];
         String[] dias= {"L","M","X","J","V","S","D"};
         for (j=0; (j<7) ;j++){
             label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+dias[j]+"</div></html>", SwingConstants.CENTER);
 
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            label_day_month[i][j].setBounds(x+ancho*j,60,ancho,30);
-            this.add(label_day_month[i][j]);
+            label_day_month[i][j].setBounds(x,y,lado,lado/2);
+            panelCalendario.add(label_day_month[i][j]);
+            x = x+lado;
         }
 
         // Se crea el calendario gráfico completo con el 
+        y = y+lado/2;
         int[][] matrix = calendario.calendar(anio_actual,mes_actual);
         for (i = 0; (i<6) ;i++ ){
+            x = borde;
           for (j=0; (j<7) ;j++){
             int_aux = matrix[i][j];
 
@@ -294,10 +364,18 @@ public class Client extends JFrame implements ActionListener{
             }
 
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            label_day_month[i][j].setBounds(x+ancho*j,y+alto*i,ancho,alto);
-            this.add(label_day_month[i][j]);
-          }  
+            label_day_month[i][j].setBounds(x,y,lado,lado);
+            panelCalendario.add(label_day_month[i][j]);
+            x = x+lado;
+          }
+          y = y+lado;
         }
+
+        x = x+borde;
+        y = y+borde;
+        panelCalendario.setBounds(0,0,x,y);
+        
+        return panelCalendario;       
     }
 
     // Método que aumenta el mes del calendario que se está viendo
@@ -324,8 +402,7 @@ public class Client extends JFrame implements ActionListener{
     private void cambiaCalendario(){
 
         // Se cambia la información que se muestra en el calendario gráfico en función del mes y del año que se vayan a visualizar
-        label_anio_iterador.setText(String.valueOf(anio_iterador));
-        label_mes_iterador.setText(String.valueOf(mes_iterador));
+        label_fecha_iterador.setText(String.valueOf(mes_iterador)+"/"+String.valueOf(anio_iterador));
         int i=0;
         int j=0;
         int int_aux;
@@ -345,87 +422,254 @@ public class Client extends JFrame implements ActionListener{
     }
 
     // Método que crea la interfaz de la sección de eventos    
-    private void MarcoEventos(){
+    private JPanel PanelEventos(){
 
-        // Se configura la ventana
-        this.setTitle("TotalAgenda"); //Título del JFrame
-        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(true); //Redimensionable
+        JPanel panelEventos = new JPanel();
+        panelEventos.setLayout(new BorderLayout());
+        panelEventos.setVisible(true);
+        //panelEventos.setBackground(Color.GREEN); // Color del fondo
 
-        // Se crea la barra de menu de la ventana
-        menu_bar=menuBar();
-        this.setJMenuBar(menu_bar);
+        // Se crea la barra superiora del panel
+        JPanel barraSuperior = new JPanel();
+        barraSuperior.setLayout(new FlowLayout());
+        barraSuperior.setVisible(true);
+        
+        JLabel label_fecha = new JLabel(String.valueOf(dia_actual+"/"+mes_actual+"/"+anio_actual));
+        barraSuperior.add(label_fecha);
 
-        // Se crean y añaden los elementos que van a formar la interfaz
-        JLabel label_correo = new JLabel("PRUEBA");
-        label_correo.setBounds(40,30,200,30);
-        this.add(label_correo);
+        boton_creaEvento = new JButton("Crear evento");
+        boton_creaEvento.addActionListener(this);
+        barraSuperior.add(boton_creaEvento);
+        
+        panelEventos.add(barraSuperior,BorderLayout.NORTH);
+
+        JTextArea areaIntroduccion = new JTextArea();
+        JScrollPane scrollBar = new JScrollPane(areaIntroduccion, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        panelEventos.add(scrollBar,BorderLayout.CENTER);
+
+        return panelEventos;
     }
 
-    // Método que crea la interfaz de la sección de gestión de la cuenta del usuario
-    private void MarcoCuenta(){
-
-        this.setTitle("TotalAgenda"); //Título del JFrame
-        this.setSize(600,500); //Dimensiones del JFrame (ancho,alto)
-        this.setResizable(true); //Redimensionable
-
-        // Se crea la barra de menu de la ventana
-        menu_bar=menuBar();
-        this.setJMenuBar(menu_bar);
+    private void FrameCreaEventos(){
+        JDialog frameCreaEventos = new JDialog(this);
+        
+        JPanel panelCreaEvento = new JPanel();
+        panelCreaEvento.setLayout(null);
+        panelCreaEvento.setVisible(true);
 
         // Se definen las coordenadas para colocar los objetos
         int ancho = 200;
         int alto = 30;
-        int x = 150;
-        int y = 90;
-        int i = ancho+20; //Incremento de x
-        int j = alto+20;; //Incremento de y
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 10;
 
-        JLabel label_correo = new JLabel("<html><div style='text-align: center;'>" + "Correo:" + "</div></html>");
-        label_correo.setBounds(x,y,ancho,alto);
-        this.add(label_correo);
+        // Se crean las etiquetas y botones, y se añaden a la ventana
+        //FILA1
+        JTextField field_titulo = new JTextField("Título");
+        field_titulo.setBounds(x,y,ancho,alto);
+        panelCreaEvento.add(field_titulo);
 
-        JLabel label_correo2 = new JLabel("Correo"); //usuario.getEmail();
-        label_correo2.setBounds(x+i,y,ancho,alto);
-        this.add(label_correo2);
+        x = x+ancho+espacio_x*2;
+        String[] colores = {"rojo","verde","azul","amarillo","naranja","negro","gris"};
+        comboColor = new JComboBox<String>(colores);
+        comboColor.setBounds(x,y,ancho/2,alto);
+        panelCreaEvento.add(comboColor);
 
-        boton_cambio_contraseña = new JButton("Cambiar Contraseña"); //usuario.getEmail();
-        boton_cambio_contraseña.setBounds(x+ancho/4,y+j,ancho,alto);
-        this.add(boton_cambio_contraseña);
+        //FILA2
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_fecha = new JLabel("Fecha: ");
+        label_fecha.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_fecha);
+
+        x = x+ancho+espacio_x;
+        JTextField anio_fecha = new JTextField(String.valueOf(anio_actual));
+        anio_fecha.setBounds(x,y,ancho,alto);
+        panelCreaEvento.add(anio_fecha);
         
-        boton_cerrarSesion=new JButton("Cerrar Sesión");
-        boton_cerrarSesion.setBounds(x+ancho/4,y+2*j,ancho,alto);
-        boton_cerrarSesion.addActionListener(this);
-        this.add(boton_cerrarSesion);
+        x = x+ancho+espacio_x;
+        String[] meses = {"enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"};
+        JComboBox<String> comboMeseFecha = new JComboBox<String>(meses);
+        comboMeseFecha.setBounds(x,y,ancho,alto);
+        panelCreaEvento.add(comboMeseFecha);
 
-        boton_salir=new JButton("Salir");
-        boton_salir.setBounds(x+ancho/4,y+3*j,ancho,alto);
-        boton_salir.addActionListener(this);
-        this.add(boton_salir);
+        x = x+ancho+espacio_x;
+        String[] dias = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"};
+        JComboBox<String> dia_fecha = new JComboBox<String>(dias);
+        dia_fecha.setBounds(x,y,ancho,alto);
+        panelCreaEvento.add(dia_fecha);        
+
+        //FILA3
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_fecha_advice = new JLabel("Fecha de aviso: ");
+        label_fecha_advice.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_fecha_advice);
+
+        //FILA4
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_nota = new JLabel("Nota: ");
+        label_nota.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_nota);
+
+        //FILA5
+        x = borde;
+        y=y+alto+espacio_y;
+        JTextArea field_nota = new JTextArea();
+        field_nota.setBounds(x,y,2*ancho,5*alto);    
+        panelCreaEvento.add(field_nota);
+
+        //FILA6
+        x = borde;
+        y=y+5*alto+espacio_y;
+        boton_formulario_crear_evento = new JButton("Crear");
+        boton_formulario_crear_evento.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(boton_formulario_crear_evento);
+
+        x = x + 2*ancho + borde;
+        y = y + alto + borde;
+        panelCreaEvento.setBounds(0,0,x,y); 
+        
+        frameCreaEventos.add(panelCreaEvento);
+        frameCreaEventos.setSize(x,y+25);
+        frameCreaEventos.setTitle("Crear evento");
+        frameCreaEventos.setVisible(true);
     }
 
-    // Método que crea la barra de menú de la aplicación
-    public JMenuBar menuBar(){
-        // Se la barra de menu de la ventana
-        JMenuBar menu = new JMenuBar();
+    // Método que crea la interfaz de la sección de gestión de la cuenta del usuario
+    private JPanel PanelCuenta(){
 
-        // Se crean los menuItem y se los asociamos a la barra de menu
-        JLabel menuFecha=new JLabel(String.valueOf(dia_actual)+"/"+String.valueOf(mes_actual)+"/"+String.valueOf(anio_actual));
-        menu.add(menuFecha);
+        JPanel panelCuenta = new JPanel();
+        panelCuenta.setLayout(null);
+        panelCuenta.setVisible(true);
+        //panelCuenta.setBackground(Color.RED); // Color del fondo
 
-        menuItem_calendario=new JMenuItem("Calendario");
-        menuItem_calendario.addActionListener(this);
-        menu.add(menuItem_calendario);
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde_x = 300;
+        int borde_y = 200;
+        int x = borde_x;
+        int y = borde_y;
+        int espacio_x = 10;
+        int espacio_y = 10;
 
-        menuItem_evento=new JMenuItem("Eventos");
-        menuItem_evento.addActionListener(this);
-        menu.add(menuItem_evento);
+        JLabel label_correo = new JLabel("Correo");
+        label_correo.setBounds(x,y,ancho,alto);
+        panelCuenta.add(label_correo);
+
+        y=y+alto+espacio_y;
+        JLabel label_correo2 = new JLabel("usuario.getEmail()");
+        label_correo2.setBounds(x,y,ancho,alto);
+        panelCuenta.add(label_correo2);
+
+        y=y+alto+espacio_y;
+        boton_modifica_credenciales = new JButton("Cambiar credenciales");
+        boton_modifica_credenciales.setBounds(x,y,ancho,alto);
+        boton_modifica_credenciales.addActionListener(this);
+        panelCuenta.add(boton_modifica_credenciales);
         
-        menuItem_cuenta=new JMenuItem("Cuenta");
-        menuItem_cuenta.addActionListener(this);
-        menu.add(menuItem_cuenta);
+        y=y+alto+espacio_y;
+        boton_cerrarSesion=new JButton("Cerrar Sesión");
+        boton_cerrarSesion.setBounds(x,y,ancho,alto);
+        boton_cerrarSesion.addActionListener(this);
+        panelCuenta.add(boton_cerrarSesion);
+        
+        y=y+alto+espacio_y;
+        boton_salir=new JButton("Salir");
+        boton_salir.setBounds(x,y,ancho,alto);
+        boton_salir.addActionListener(this);
+        panelCuenta.add(boton_salir);
 
-        return menu;
+        x = 2*borde_x + espacio_x + ancho;
+        y = y+alto+borde_y;
+        panelCuenta.setBounds(0,0,x,y);
+        
+        return panelCuenta;
+    }
+
+    private void FrameModificaCredenciales(){
+        JDialog frameModificaCredenciales = new JDialog(this);
+        
+        JPanel panelModificaCredenciales = new JPanel();
+        panelModificaCredenciales.setLayout(null);
+        panelModificaCredenciales.setVisible(true);
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 200;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 10;
+
+        // Se crean las etiquetas y botones, y se añaden a la ventana
+        //FILA1
+        JLabel label_correo = new JLabel("Correo");
+        label_correo.setBounds(x,y,ancho,alto);
+        panelModificaCredenciales.add(label_correo);
+        
+        x = x+ancho+espacio_x;
+        JTextField field_correo = new JTextField("usuario.getEmail()");
+        field_correo.setBounds(x,y,ancho,alto);
+        panelModificaCredenciales.add(field_correo);
+
+        //FILA2
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_password1 = new JLabel("Nueva contraseña: ");
+        label_password1.setBounds(x,y,ancho,alto);    
+        panelModificaCredenciales.add(label_password1);
+
+        x = x+ancho+espacio_x;
+        JPasswordField field_password1 = new JPasswordField();
+        field_password1.setBounds(x,y,ancho,alto);    
+        panelModificaCredenciales.add(field_password1);
+
+        //FILA3
+        x = borde;
+        y=y+alto+espacio_y;       
+        JLabel label_password2 = new JLabel("Nueva contraseña: ");
+        label_password2.setBounds(x,y,ancho,alto);    
+        panelModificaCredenciales.add(label_password2);
+
+        x = x+ancho+espacio_x;
+        JPasswordField field_password2 = new JPasswordField();
+        field_password2.setBounds(x,y,ancho,alto);    
+        panelModificaCredenciales.add(field_password2);
+
+        //FILA4
+        x = borde;
+        y=y+alto+espacio_y;       
+        JLabel label_password3 = new JLabel("Antigua contraseña: ");
+        label_password3.setBounds(x,y,ancho,alto);    
+        panelModificaCredenciales.add(label_password3);
+
+        x = x+ancho+espacio_x;
+        JPasswordField field_password3 = new JPasswordField();
+        field_password3.setBounds(x,y,ancho,alto);    
+        panelModificaCredenciales.add(field_password3);
+
+        //FILA5
+        x = borde;
+        y=y+alto+espacio_y;
+        JButton boton_formulario_modifica_credenciales = new JButton("Cambiar credenciales");
+        boton_formulario_modifica_credenciales.setBounds(x,y,ancho,alto);    
+        panelModificaCredenciales.add(boton_formulario_modifica_credenciales);
+
+        x = x + 2*ancho + borde;
+        y = y + alto + borde;
+        panelModificaCredenciales.setBounds(0,0,x,y); 
+        
+        frameModificaCredenciales.add(panelModificaCredenciales);
+        frameModificaCredenciales.setSize(x,y+25);
+        frameModificaCredenciales.setTitle("Modificar credenciales");
+        frameModificaCredenciales.setVisible(true);
     }
 
     public static void main(String[] args) {

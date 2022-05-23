@@ -2,16 +2,16 @@
 import java.io.*;
 import java.util.*;
 
-class Event{
+class User{
 
     private String email;
-    private String passwd;
+    private int idSesion;
 
-    Event(){}
+    User(){}
     
-    Event(String email, String passwd, Calendar date, String color) {
+    User(String email, int idSesion) {
         this.email = email;
-		this.passwd = passwd;
+		this.idSesion = idSesion;
     }
 
     public void setEmail(String email){
@@ -24,19 +24,17 @@ class Event{
         return this.email;
     }
 
-    public void setPasswd(String passwd){
+    public void setidSesion(int idSesion){
 
-        this.passwd = passwd;
+        this.idSesion = idSesion;
     }
 
-    public String getPasswd(){
+    public int getidSesion(){
 
-        return this.passwd;
+        return this.idSesion;
     }
 
-    /*
     public String toString(){
-        return ();
+        return (num2str(idSesion)+"-"+email);
     }
-    */
 }
