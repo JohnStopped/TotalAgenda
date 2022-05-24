@@ -9,6 +9,9 @@ def lambda_handler(event, context):
     print ('email' in event)
     print ('passwd' in event)
     '''
+    complete_req = event
+    
+    body = json.loads(event['body'])
     
     response = {
         "state": 0,
@@ -17,15 +20,15 @@ def lambda_handler(event, context):
     }
     
     #If format isn't correct function will not continue
-    if ('email' in event and 'passwd' in event and len(list(event))==2):
+    if ('email' in body and 'passwd' in body and len(list(body))==2):
         conn = psql.connect(dbname="BaseDatosSDSW", user="functionsuser", password="ferrariYaFallo", host="bbdd-totalagenda.c0fmdhhpll94.eu-west-3.rds.amazonaws.com", port="54321 ")
         cur = conn.cursor()
-        cur.execute("SELECT * FROM users where email=%s;",(event['email'],))
+        cur.execute("SELECT * FROM users where email=%s;",(body['email'],))
         user = cur.fetchone()
         
         if (user == None): #This email doesn't exit then function could create the user
-            email = event['email']
-            passwd = event['passwd']
+            email = body['email']
+            passwd = body['passwd']
             
             cur.execute("insert into users (email, passwd, session_id) values (%s,%s,%s)", (email,passwd,0,))
             

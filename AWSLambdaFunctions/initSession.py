@@ -1,7 +1,3 @@
-import json
-import psycopg2 as psql
-import random
-
 def lambda_handler(event, context):
     '''
     print (event)
@@ -9,7 +5,13 @@ def lambda_handler(event, context):
     print ('email' in event)
     print ('passwd' in event)
     '''
+    complete_req = event
     
+    body = json.loads(event['body'])
+    #print (body)
+    #print(body['email'])
+    #print(body['passwd'])
+    #print ('El diccionario body tiene ' + str(len(list(body))) + ' elementos.')
     response = {
         "state": 0,
         "desc": "Bad use of parameters",
@@ -17,17 +19,17 @@ def lambda_handler(event, context):
     }
     
     #If format isn't correct function will not con
-    if ('email' in event and 'passwd' in event and len(list(event))==2):
+    if ('email' in body and 'passwd' in body and len(list(body))==2):
         conn = psql.connect(dbname="BaseDatosSDSW", user="functionsuser", password="ferrariYaFallo", host="bbdd-totalagenda.c0fmdhhpll94.eu-west-3.rds.amazonaws.com", port="54321 ")
         cur = conn.cursor()
-        cur.execute("SELECT * FROM users where email=%s;",(event['email'],))
+        cur.execute("SELECT * FROM users where email=%s;",(body['email'],))
         user = cur.fetchone()
         
         if (user != None):
             email = user[0]
             passwd = user[1]
             
-            if (passwd == event['passwd']):
+            if (passwd == body['passwd']):
                 session_id = user[2]
                 
                 if (session_id == 0):
@@ -44,7 +46,7 @@ def lambda_handler(event, context):
                         ddbb_session_id = cur.fetchone()
                         
                     #update database
-                    cur.execute("update users set session_id=%s where email=%s",(str(session_id),event['email'],))
+                    cur.execute("update users set session_id=%s where email=%s",(str(session_id),body['email'],))
                     
                     response = {
                        "state": 1,
@@ -85,5 +87,5 @@ def lambda_handler(event, context):
         "headers": {
             "Content-Type": "application/json"
         },
-        "body": str(response)
+        "body": json.dumps(response)
     }
