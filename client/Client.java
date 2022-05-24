@@ -1,24 +1,34 @@
 import java.io.*;
 import java.util.*;
+
 import javax.swing.*;
-//import java.awt.*;
-import java.awt.Color;
-import java.awt.Component.*;
-import java.awt.event.*;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.net.http.*;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+//import java.awt.*;
+import java.awt.Color;
+import java.awt.Component.*;
+import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class Client extends JFrame implements ActionListener{
 
     private JFrame ventana;
     
+    private final HttpClient httpClient = HttpClient.newBuilder()
+        .version(HttpClient.Version.HTTP_2)
+        .build();
+
     //Información 
     private User usuario;
     private List<Event> eventos;
@@ -91,9 +101,6 @@ public class Client extends JFrame implements ActionListener{
         if (e.getSource()==boton_creaEvento) {
             System.out.println("Se abre la ventana para crear un evento");
             FrameCreaEventos();
-        }
-        if (e.getSource()==boton_formulario_crear_evento) {
-            System.out.println("Se crea un evento");
         }
 
         //Apartado de Cuenta
@@ -205,25 +212,25 @@ public class Client extends JFrame implements ActionListener{
                 }else{
                     // En caso en que los campos no estén vacíos, se procede a hacer la consulta
                     boolean correcto = true;
-                    /*
-                    HttpClient httpClient = HttpClient.newBuilder()
-                        .version(HttpClient.Version.HTTP_1_1)
-                        .connectTimeout(Duration.ofSeconds(10))
-                        .build();
-                    HttpRequest request = HttpRequest.newBuilder()
-                            .GET()
-                            .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/initSession"))
-                            .setHeader("User-Agent", "application/json") // add request header
-                            .build();
-                    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                    // print response headers
-                    HttpHeaders headers = response.headers();
-                    headers.map().forEach((k, v) -> System.out.println(k + ":" + v));
-                    // print status code
-                    System.out.println(response.statusCode());
-                    // print response body
-                    System.out.println(response.body());
-                    */
+
+                    try{
+                        HttpRequest request = HttpRequest.newBuilder()
+                                .POST(HttpRequest.BodyPublishers.ofString(new StringBuilder("{\"email\": \"ae@ae\", \"passwd\": \"ae\"}").toString()))
+                                .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/initSession"))
+                                .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
+                                .header("Content-Type", "application/json")
+                                .build();
+                        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                        // print status code
+                        System.out.println(response.statusCode());
+                        // print response body
+                        System.out.println(response.body());
+
+                        
+
+                    }catch(Exception ex){
+                        FrameError("Vuelva a intentarlo");
+                    }
 
                     // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
                     if (correcto){
@@ -536,8 +543,7 @@ public class Client extends JFrame implements ActionListener{
         areaListaEventos.setLayout(null);
         areaListaEventos.setVisible(true);
         // Se definen las coordenadas para colocar los objetos
-        int lado = 60;
-        int ancho = 60;
+        int ancho = 200;
         int alto = 30;
         int borde = 10;
         int x = borde;
@@ -545,13 +551,18 @@ public class Client extends JFrame implements ActionListener{
         int espacio_x = 10;
         int espacio_y = 20;
         int i = 0;
-        int j = 0;
-        int int_aux;
         /*
-        for (i=0; i<;i++){
-            for each 
+        if (eventos.length()!=0){
+            JLabel[] labelEventos = new ArrayList();
+            for (event e: eventos){
+                labelEventos[i] = new JLabel(eventos.toString());
+                labelEventos[i].setBounds(x,y,ancho,alto);
+                labelEventos[i].add(areaListaEventos);
+                y=y+alto;
+                i++;
+            }
         }
-        */
+        */        
         JScrollPane scrollBar = new JScrollPane(areaListaEventos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panelEventos.add(scrollBar,BorderLayout.CENTER);
 
@@ -850,7 +861,7 @@ public class Client extends JFrame implements ActionListener{
                     FrameError("Hay campos obligatorios vacíos");
                 }else if( (field_password1.getText().isEmpty()) != (field_password2.getText().isEmpty()) ){
                     FrameError("Hay campos obligatorios vacíos");
-                }else if( (field_password1.getText().equals(field_password2.getText().isEmpty()) ){
+                }else if( field_password1.getText().equals(field_password2.getText().isEmpty()) ){
                     FrameError("Las constraseñas son diferentes");
                 }else{
                     boolean correcto = false;
