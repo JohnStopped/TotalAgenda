@@ -18,7 +18,7 @@ import javax.swing.JTabbedPane;
 public class Client extends JFrame implements ActionListener{
 
     //Apartado de Inicio de sesión
-    private JButton boton_formulario_login,boton_register;
+    private JButton boton_register;
 
     //Apartado de Crear Cuenta
     private JButton boton_formulario_crear_cuenta,boton_inicio;
@@ -37,9 +37,6 @@ public class Client extends JFrame implements ActionListener{
 
     // Apartado Evento
     private JButton boton_creaEvento,boton_formulario_crear_evento;
-    //private JComboBox<String> comboColor,comboMesFecha,comboMesRecordatorio;
-    //private JTextField anio_fecha,anio_recordatorio,dia_fecha,dia_actual,field_titulo;
-    //private JTextArea field_nota;
 
     //Apartado de Cuenta
     private JButton boton_modifica_credenciales, boton_salir, boton_cerrarSesion;
@@ -47,13 +44,6 @@ public class Client extends JFrame implements ActionListener{
     //Información 
     private User usuario;
     private List<Event> eventos;
-
-//JTextField:
-    // .setBackground(); // Color del fondo
-    // .setForeground(); // Color de la fuente
-    // .setFont(new java.awt.Font("Swis721 Blk BT", 1, 12)); // Tipo de fuente
-    // .setText("texto"); // Para vaciarlo basta con asignar ""
-    // .getText().isEmpty() // Así podemos validar si está vacío o no
 
     // Constructor de la interfaz de la aplicación
     public Client() {
@@ -159,7 +149,8 @@ public class Client extends JFrame implements ActionListener{
 
     private void InicioSesion(){
         boolean correcto = true;
-/*
+
+        /*
         HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
             .connectTimeout(Duration.ofSeconds(10))
@@ -182,8 +173,8 @@ public class Client extends JFrame implements ActionListener{
  
         // print response body
         System.out.println(response.body());
+        */
 
-*/
         // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
         if (correcto){
             this.getContentPane().removeAll();
@@ -194,9 +185,7 @@ public class Client extends JFrame implements ActionListener{
         }else{
             FrameError("El email o la contraseña son incorrectos");
         }
-
     }
-
 
     private void FrameError(String cadena){
         JDialog frameError = new JDialog(this);
@@ -272,9 +261,28 @@ public class Client extends JFrame implements ActionListener{
         //FILA3
         x=borde_x;
         y=y+alto+espacio_x;
-        boton_formulario_login = new JButton("Inicar Sesión");
+        JButton boton_formulario_login = new JButton("Inicar Sesión");
         boton_formulario_login.setBounds(x,y,ancho,alto-5);
-        boton_formulario_login.addActionListener(this);     
+        boton_formulario_login.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                if (anio_fecha.getText().isEmpty() || dia_fecha.getText().isEmpty() || field_titulo.getText().isEmpty() || hora_fecha.getText().isEmpty() || min_fecha.getText().isEmpty()){
+                    FrameError("Hay campos obligatorios vacíos");
+                }else{
+                    Event evento = new Event();
+                    evento.setTitulo(field_titulo.getText());
+                    evento.setColor((String) menuColores.getSelectedItem());
+                    Integer auxinteger = new Integer(0);
+                    evento.setDate(new GregorianCalendar(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
+                    evento.setNote(field_nota.getText());
+                    if(!anio_recordatorio.getText().isEmpty() && !mes_recordatorio.getText().isEmpty() && !dia_recordatorio.getText().isEmpty() && !hora_recordatorio.getText().isEmpty() && !min_recordatorio.getText().isEmpty()){
+                        evento.setAdvice_date(new GregorianCalendar(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
+                    }
+                    System.out.println(evento.toString());
+                    eventos.add(evento);
+                    frameCreaEventos.dispose();
+                }
+            }
+        });              
         panelInicioSesion.add(boton_formulario_login);
         
         x=x+ancho+espacio_x;
@@ -338,7 +346,7 @@ public class Client extends JFrame implements ActionListener{
         y = y + alto + espacio_y;
         boton_formulario_crear_cuenta = new JButton("Crear Cuenta");
         boton_formulario_crear_cuenta.setBounds(x,y,ancho,alto-5);
-        boton_formulario_crear_cuenta.addActionListener(this);     
+        boton_formulario_crear_cuenta.addActionListener(this);    
         panelCreaCuenta.add(boton_formulario_crear_cuenta);
 
         y = y + alto + espacio_y;
@@ -520,8 +528,27 @@ public class Client extends JFrame implements ActionListener{
         
         panelEventos.add(barraSuperior,BorderLayout.NORTH);
 
-        JTextArea areaIntroduccion = new JTextArea();
-        JScrollPane scrollBar = new JScrollPane(areaIntroduccion, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JPanel areaListaEventos = new JPanel();
+        areaListaEventos.setLayout(null);
+        areaListaEventos.setVisible(true);
+        // Se definen las coordenadas para colocar los objetos
+        int lado = 60;
+        int ancho = 60;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 20;
+        int i = 0;
+        int j = 0;
+        int int_aux;
+        /*
+        for (i=0; i<;i++){
+            for each 
+        }
+        */
+        JScrollPane scrollBar = new JScrollPane(areaListaEventos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panelEventos.add(scrollBar,BorderLayout.CENTER);
 
         return panelEventos;
@@ -662,7 +689,9 @@ public class Client extends JFrame implements ActionListener{
                     if(!anio_recordatorio.getText().isEmpty() && !mes_recordatorio.getText().isEmpty() && !dia_recordatorio.getText().isEmpty() && !hora_recordatorio.getText().isEmpty() && !min_recordatorio.getText().isEmpty()){
                         evento.setAdvice_date(new GregorianCalendar(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
                     }
+                    System.out.println(evento.toString());
                     eventos.add(evento);
+                    frameCreaEventos.dispose();
                 }
             }
         }); 
@@ -798,7 +827,33 @@ public class Client extends JFrame implements ActionListener{
         x = borde;
         y=y+alto+espacio_y;
         JButton boton_formulario_modifica_credenciales = new JButton("Cambiar credenciales");
-        boton_formulario_modifica_credenciales.setBounds(x,y,ancho,alto);    
+        boton_formulario_modifica_credenciales.setBounds(x,y,ancho,alto);
+        boton_formulario_modifica_credenciales.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                if (field_correo.getText().isEmpty() || field_password3.getText().isEmpty() ){
+                    FrameError("Hay campos obligatorios vacíos");
+                }else if( (field_password1.getText().isEmpty()) != (field_password2.getText().isEmpty()) ){
+                    FrameError("Hay campos obligatorios vacíos");
+                }else{
+                    boolean correcto = false;
+                    
+                    //Se accede a la base de datos con el usuario y contraseña introducidas usuario.getEmail() field_password3.getText()
+                    
+
+                    if (correcto == true){
+                        if(field_password1.getText().isEmpty() == false){
+                            //se hace el update de correo y contraseña
+                            //usuario.setEmail() = field_correo.getText();
+                        }else{
+                            //Se hace el update del correo unicamente
+                            //usuario.setEmail() = field_correo.getText();
+                        }
+                        frameModificaCredenciales.dispose();
+                    }
+                }
+            }
+        }); 
+
         panelModificaCredenciales.add(boton_formulario_modifica_credenciales);
 
         x = x + 2*ancho + borde;
