@@ -33,7 +33,16 @@ def lambda_handler(event, context):
                 if (session_id == 0):
                     #session not initializated, generate session-id
                     session_id = random.randint(1,255)
+
+                    cur.execute("select session_id from users where session_id=%s;",(session_id,)) #Every new session-id has to be different
+                    ddbb_session_id = cur.fetchone()
+                    print(ddbb_session_id)
                     
+                    while (ddbb_session_id != None):
+                        session_id = random.randint(1,255)
+                        cur.execute("select session_id from users where session_id=%s;",(session_id,)) #Every new session-id has to be different
+                        ddbb_session_id = cur.fetchone()
+                        
                     #update database
                     cur.execute("update users set session_id=%s where email=%s",(str(session_id),event['email'],))
                     
