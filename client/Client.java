@@ -75,10 +75,10 @@ public class Client extends JFrame implements ActionListener{
         this.setSize(800,600);
         this.setResizable(false); //No redimensionable
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
-        this.setVisible(true); //Mostrar JFrame 
         
         // Se crean la interfaz de la sección de inicio de sesión
         this.add(PanelInicioSesion(),BorderLayout.CENTER);
+        this.setVisible(true);   //Mostrar JFrame 
     }
 
     // Método que implementa las acciones de items de la interfaz que no implementan la acción directamente
@@ -150,7 +150,7 @@ public class Client extends JFrame implements ActionListener{
         
         frameError.add(panelError);
         frameError.setSize(x,y+25);
-        frameError.setTitle("Crear evento");
+        frameError.setTitle("Error");
         frameError.setVisible(true);  
     }
 
@@ -204,6 +204,7 @@ public class Client extends JFrame implements ActionListener{
         //Definimos lo que realiza el botón del formulario de inicio se sesión
         boton_formulario_login.addActionListener (new ActionListener () {
             public void actionPerformed(ActionEvent e) {
+
                 System.out.println("Se ha pulsado el botón para enviar el formulario del login");
 
                 // En caso de que esten vacíos los campos se devuelve un error en una ventana flotante              
@@ -211,11 +212,11 @@ public class Client extends JFrame implements ActionListener{
                     FrameError("Hay campos obligatorios vacíos");
                 }else{
                     // En caso en que los campos no estén vacíos, se procede a hacer la consulta
-                    boolean correcto = true;
+                    boolean correcto = false;
 
                     try{
                         HttpRequest request = HttpRequest.newBuilder()
-                                .POST(HttpRequest.BodyPublishers.ofString(new StringBuilder("{\"email\": \"ae@ae\", \"passwd\": \"ae\"}").toString()))
+                                .POST(HttpRequest.BodyPublishers.ofString(new StringBuilder("{\"email\": \""+field_correo_iniciosesion.getText()+"\", \"passwd\": \""+field_pass_iniciosesion.getText()+"\"}").toString()))
                                 .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/initSession"))
                                 .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
                                 .header("Content-Type", "application/json")
@@ -226,22 +227,37 @@ public class Client extends JFrame implements ActionListener{
                         // print response body
                         System.out.println(response.body());
 
-                        
+                        if (response.statusCode() == 200){
+                            Integer int_aux = new Integer(0);
+                            usuario = new User();
+                            //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
+                            // Se quitan las llaves al body (primer y ultimo caracter)
+                            String strAux = response.body().substring(1,response.body().length()-1);
+                            System.out.println(strAux);
+                            // Se hace un split por comas
+                            String [] atributos = strAux.split(",");
+                            // Extraemos la información de los elemetnos que nos interesan, el 3
+                            usuario.setidSesion(int_aux.parseInt(atributos[2].split(":")[1].trim()));
+                            System.out.println(int_aux.parseInt(atributos[2].split(":")[1].trim()));
+                            usuario.setEmail(field_correo_iniciosesion.getText());
+                            correcto = true;
+                        }
+
+                        // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
+                        if (correcto){
+                            ventana.getContentPane().removeAll();
+                            ventana.getContentPane().invalidate();           
+                            Pestañas();
+                            ventana.getContentPane().revalidate();
+                            ventana.getContentPane().setVisible(true);                
+                        }else{
+                            FrameError("El email o la contraseña son incorrectos");
+                        }
 
                     }catch(Exception ex){
-                        FrameError("Vuelva a intentarlo");
+                        FrameError("Vuelva a intentarlo :"+ex);
                     }
 
-                    // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
-                    if (correcto){
-                        ventana.getContentPane().removeAll();
-                        ventana.getContentPane().invalidate();           
-                        Pestañas();
-                        ventana.getContentPane().revalidate();
-                        ventana.getContentPane().setVisible(true);                
-                    }else{
-                        FrameError("El email o la contraseña son incorrectos");
-                    }
                 }
             }
         });              
