@@ -1,24 +1,34 @@
 import java.io.*;
 import java.util.*;
+
 import javax.swing.*;
-//import java.awt.*;
-import java.awt.Color;
-import java.awt.Component.*;
-import java.awt.event.*;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.net.http.*;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+//import java.awt.*;
+import java.awt.Color;
+import java.awt.Component.*;
+import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class Client extends JFrame implements ActionListener{
 
     private JFrame ventana;
     
+    private final HttpClient httpClient = HttpClient.newBuilder()
+        .version(HttpClient.Version.HTTP_2)
+        .build();
+
     //Información 
     private User usuario;
     private List<Event> eventos;
@@ -64,11 +74,41 @@ public class Client extends JFrame implements ActionListener{
         this.setLayout(new BorderLayout()); //Layout absoluto
         this.setSize(800,600);
         this.setResizable(false); //No redimensionable
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
-        this.setVisible(true); //Mostrar JFrame 
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         
         // Se crean la interfaz de la sección de inicio de sesión
         this.add(PanelInicioSesion(),BorderLayout.CENTER);
+        this.setVisible(true);   //Mostrar JFrame 
+    }
+
+    private void close(){
+
+        try{
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(new StringBuilder("{\"email\": \""+usuario.getEmail()+"\", \"passwd\": \""+usuario.getPasswd()+"\"}").toString()))
+                    .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/closeSession"))
+                    .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
+                    .header("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            // print status code
+            System.out.println(response.statusCode());
+            // print response body
+            System.out.println(response.body());
+
+            if (response.statusCode() == 200){
+                Integer int_aux = new Integer(0);
+                //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
+                // Se quitan las llaves al body (primer y ultimo caracter)
+                String strAux = response.body().substring(1,response.body().length()-1);
+                // Se hace un split por comas
+                String [] atributos = strAux.split(",");
+                // Extraemos la información de los elemetnos que nos interesan, el 3
+            }
+        }catch(Exception ex){
+            System.out.println(ex);
+        }
+        //ventana.dispose();
     }
 
     // Método que implementa las acciones de items de la interfaz que no implementan la acción directamente
@@ -92,9 +132,6 @@ public class Client extends JFrame implements ActionListener{
             System.out.println("Se abre la ventana para crear un evento");
             FrameCreaEventos();
         }
-        if (e.getSource()==boton_formulario_crear_evento) {
-            System.out.println("Se crea un evento");
-        }
 
         //Apartado de Cuenta
         if (e.getSource()==boton_modifica_credenciales) {
@@ -103,10 +140,13 @@ public class Client extends JFrame implements ActionListener{
         }  
         if (e.getSource()==boton_salir) {
             System.out.println("Se llama a finalizar la aplicación");
+            close();
             System.exit(0);
         }   
         if (e.getSource()==boton_cerrarSesion) {
             System.out.println("Se ha pulsado el botón para ir al inicio de sesión");
+            close();
+            usuario = new User();
             this.getContentPane().removeAll();
             this.getContentPane().invalidate();           
             this.add(PanelInicioSesion(),BorderLayout.CENTER);
@@ -143,7 +183,7 @@ public class Client extends JFrame implements ActionListener{
         
         frameError.add(panelError);
         frameError.setSize(x,y+25);
-        frameError.setTitle("Crear evento");
+        frameError.setTitle("Error");
         frameError.setVisible(true);  
     }
 
@@ -197,6 +237,7 @@ public class Client extends JFrame implements ActionListener{
         //Definimos lo que realiza el botón del formulario de inicio se sesión
         boton_formulario_login.addActionListener (new ActionListener () {
             public void actionPerformed(ActionEvent e) {
+
                 System.out.println("Se ha pulsado el botón para enviar el formulario del login");
 
                 // En caso de que esten vacíos los campos se devuelve un error en una ventana flotante              
@@ -204,37 +245,55 @@ public class Client extends JFrame implements ActionListener{
                     FrameError("Hay campos obligatorios vacíos");
                 }else{
                     // En caso en que los campos no estén vacíos, se procede a hacer la consulta
-                    boolean correcto = true;
-                    /*
-                    HttpClient httpClient = HttpClient.newBuilder()
-                        .version(HttpClient.Version.HTTP_1_1)
-                        .connectTimeout(Duration.ofSeconds(10))
-                        .build();
-                    HttpRequest request = HttpRequest.newBuilder()
-                            .GET()
-                            .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/initSession"))
-                            .setHeader("User-Agent", "application/json") // add request header
-                            .build();
-                    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                    // print response headers
-                    HttpHeaders headers = response.headers();
-                    headers.map().forEach((k, v) -> System.out.println(k + ":" + v));
-                    // print status code
-                    System.out.println(response.statusCode());
-                    // print response body
-                    System.out.println(response.body());
-                    */
+                    boolean correcto = false;
 
-                    // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
-                    if (correcto){
-                        ventana.getContentPane().removeAll();
-                        ventana.getContentPane().invalidate();           
-                        Pestañas();
-                        ventana.getContentPane().revalidate();
-                        ventana.getContentPane().setVisible(true);                
-                    }else{
-                        FrameError("El email o la contraseña son incorrectos");
+                    try{
+                        HttpRequest request = HttpRequest.newBuilder()
+                                .POST(HttpRequest.BodyPublishers.ofString(new StringBuilder("{\"email\": \""+field_correo_iniciosesion.getText()+"\", \"passwd\": \""+field_pass_iniciosesion.getText()+"\"}").toString()))
+                                .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/initSession"))
+                                .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
+                                .header("Content-Type", "application/json")
+                                .build();
+                        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                        // print status code
+                        System.out.println(response.statusCode());
+                        // print response body
+                        System.out.println(response.body());
+
+                        if (response.statusCode() == 200){
+                            Integer int_aux = new Integer(0);
+                            usuario = new User();
+                            //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
+                            // Se quitan las llaves al body (primer y ultimo caracter)
+                            String strAux = response.body().substring(1,response.body().length()-1);
+                            System.out.println(strAux);
+                            // Se hace un split por comas
+                            String [] atributos = strAux.split(",");
+                            // Extraemos la información de los elemetnos que nos interesan, el 3
+                            System.out.println(int_aux.parseInt(atributos[2].split(":")[1].trim()));
+                            if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
+                                usuario.setidSesion(int_aux.parseInt(atributos[2].split(":")[1].trim()));
+                                usuario.setEmail(field_correo_iniciosesion.getText());
+                                usuario.setPasswd(field_pass_iniciosesion.getText());
+                                correcto = true;
+                            }
+                        }
+
+                        // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
+                        if (correcto){
+                            ventana.getContentPane().removeAll();
+                            ventana.getContentPane().invalidate();           
+                            Pestañas();
+                            ventana.getContentPane().revalidate();
+                            ventana.getContentPane().setVisible(true);                
+                        }else{
+                            FrameError("El email o la contraseña son incorrectos");
+                        }
+
+                    }catch(Exception ex){
+                        FrameError("Vuelva a intentarlo :"+ex);
                     }
+
                 }
             }
         });              
@@ -326,7 +385,45 @@ public class Client extends JFrame implements ActionListener{
                     // En caso en que los campos no estén vacíos, y las contraseñas sean iguales se crea el usuario y se accede a la ventana de inicio de sesión
 
                     // Se añade al usuario
+                    try{
+                        HttpRequest request = HttpRequest.newBuilder()
+                                .POST(HttpRequest.BodyPublishers.ofString(new StringBuilder("{\"email\": \""+field_correo.getText()+"\", \"passwd\": \""+field_pass1.getText()+"\"}").toString()))
+                                .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/createUser"))
+                                .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
+                                .header("Content-Type", "application/json")
+                                .build();
+                        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                        // print status code
+                        System.out.println(response.statusCode());
+                        // print response body
+                        System.out.println(response.body());
 
+                        if (response.statusCode() == 200){
+                            Integer int_aux = new Integer(0);
+                            usuario = new User();
+                            //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
+                            // Se quitan las llaves al body (primer y ultimo caracter)
+                            String strAux = response.body().substring(1,response.body().length()-1);
+                            System.out.println(strAux);
+                            // Se hace un split por comas
+                            String [] atributos = strAux.split(",");
+                                                        
+                            if(int_aux.parseInt(atributos[0].split(":")[1].trim())==1){
+                                ventana.getContentPane().removeAll();
+                                ventana.getContentPane().invalidate();           
+                                Pestañas();
+                                ventana.getContentPane().revalidate();
+                                ventana.getContentPane().setVisible(true);                
+                            }else{
+                                FrameError("El usuario ya existe");
+                            }
+                        }else{
+                            FrameError("Ha ocurrido algún problema");
+                        }
+
+                    }catch(Exception ex){
+                        FrameError("Vuelva a intentarlo :"+ex);
+                    }
 
                     // Se muestra la interfaz de inicio de sesión
                     ventana.getContentPane().removeAll();
@@ -335,6 +432,8 @@ public class Client extends JFrame implements ActionListener{
                     ventana.setTitle("TotalAgenda - Inicio Sesión"); //Título del JFrame
                     ventana.getContentPane().revalidate();
                     ventana.getContentPane().setVisible(true);              
+                }else{
+                    FrameError("Las contraseñas no son iguales");
                 }
             }
         });     
@@ -536,8 +635,7 @@ public class Client extends JFrame implements ActionListener{
         areaListaEventos.setLayout(null);
         areaListaEventos.setVisible(true);
         // Se definen las coordenadas para colocar los objetos
-        int lado = 60;
-        int ancho = 60;
+        int ancho = 200;
         int alto = 30;
         int borde = 10;
         int x = borde;
@@ -545,13 +643,18 @@ public class Client extends JFrame implements ActionListener{
         int espacio_x = 10;
         int espacio_y = 20;
         int i = 0;
-        int j = 0;
-        int int_aux;
         /*
-        for (i=0; i<;i++){
-            for each 
+        if (eventos.length()!=0){
+            JLabel[] labelEventos = new ArrayList();
+            for (event e: eventos){
+                labelEventos[i] = new JLabel(eventos.toString());
+                labelEventos[i].setBounds(x,y,ancho,alto);
+                labelEventos[i].add(areaListaEventos);
+                y=y+alto;
+                i++;
+            }
         }
-        */
+        */        
         JScrollPane scrollBar = new JScrollPane(areaListaEventos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panelEventos.add(scrollBar,BorderLayout.CENTER);
 
@@ -850,7 +953,7 @@ public class Client extends JFrame implements ActionListener{
                     FrameError("Hay campos obligatorios vacíos");
                 }else if( (field_password1.getText().isEmpty()) != (field_password2.getText().isEmpty()) ){
                     FrameError("Hay campos obligatorios vacíos");
-                }else if( (field_password1.getText().equals(field_password2.getText().isEmpty()) ){
+                }else if( field_password1.getText().equals(field_password2.getText().isEmpty()) ){
                     FrameError("Las constraseñas son diferentes");
                 }else{
                     boolean correcto = false;
@@ -887,6 +990,7 @@ public class Client extends JFrame implements ActionListener{
         System.out.println("La aplicación empieza");
 
         Client ventana = new Client();
+        System.out.println("Continuación del main");        
 
     }
 }

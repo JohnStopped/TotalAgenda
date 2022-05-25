@@ -5,13 +5,15 @@ import java.util.*;
 class User{
 
     private String email;
+    private String passwd;
     private int idSesion;
 
     User(){}
     
-    User(String email, int idSesion) {
+    User(String email, int idSesion,String passwd) {
         this.email = email;
 		this.idSesion = idSesion;
+        this.passwd = passwd;
     }
 
     public void setEmail(String email){
@@ -32,6 +34,16 @@ class User{
     public int getidSesion(){
 
         return this.idSesion;
+    }
+
+    public void setPasswd(String passwd){
+
+        this.passwd = passwd;
+    }
+
+    public String getPasswd(){
+
+        return this.passwd;
     }
 
     public String toString(){
