@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     response = {
         "state": 0,
         "desc": "Bad use of parameters",
-        "session-id": 0
+        "event_id": 0
     }
     
     #If format isn't correct function will not continue
@@ -73,21 +73,21 @@ def lambda_handler(event, context):
                 response = {
                     "state": 1,
                     "desc": "Event created succesfully",
-                    "session-id": session_id
+                    "event_id": event_id
                 }
                 
             else:    
                 response = {
                     "state": 0,
                     "desc": "Most important data is in a created event",
-                    "session-id": session_id
+                    "event_id": event_id
                 }
         else:
             print ("Session_id sent doesn't exit")
             response = {
                 "state": 0,
                 "desc": "Session_id sent doesn't exit",
-                "session-id": 0
+                "event_id": 0
             }
             
         conn.commit()

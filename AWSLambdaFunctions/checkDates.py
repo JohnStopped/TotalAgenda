@@ -30,7 +30,7 @@ def lambda_handler(event, context):
         bbdd_response = cur.fetchall() #Contains list of tuples (event_id,email,date1,advice_date,name)
         
         sender = 'totalagendaadvisorevents@gmail.com'
-        password = 'TAavisaEvento77'
+        password = 'nxdvuzqajoyxvpgk'
         
         if (bbdd_response != []): #There are some events to advice
             for row in bbdd_response:
