@@ -4,6 +4,7 @@ import java.util.*;
 
 class Event{
 
+    private int idSesion;    
     private int id;
     private String email;
     private Calendar date;
@@ -12,9 +13,22 @@ class Event{
     private String color;
     private String note;
 
-    Event(){}
+    Event(){
+
+        this.idSesion = null;
+        this.id = null;
+        this.email = null;
+        this.date = null;
+        this.advice_date = null;
+        this.titulo = null;
+        this.color = null;
+        this.note = null;
+
+    }
     
     Event(int id, String email, Calendar date, Calendar advice_date, String titulo, String color, String note) {
+        
+        this.idSesion = idSesion;
         this.id = id;
         this.email = email;
         this.date = date;
@@ -22,6 +36,16 @@ class Event{
         this.titulo = titulo;
         this.color = color;
         this.note = note;
+    }
+
+    public void setidSesion(int idSesion){
+
+        this.idSesion = idSesion;
+    }
+
+    public int getidSesion(){
+
+        return this.idSesion;
     }
 
 

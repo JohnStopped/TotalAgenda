@@ -81,6 +81,23 @@ public class Client extends JFrame implements ActionListener{
         this.setVisible(true);   //Mostrar JFrame 
     }
 
+    private HttpResponse<String> send(String funcion, String cadena){
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(new StringBuilder(cadena).toString()))
+                .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/"+funcion))
+                .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
+                .header("Content-Type", "application/json")
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        // print status code
+        System.out.println(response.statusCode());
+        // print response body
+        System.out.println(response.body());
+
+        return response;        
+    }
+
     private void close(){
 
         try{
@@ -790,22 +807,79 @@ public class Client extends JFrame implements ActionListener{
                     FrameError("Hay campos obligatorios vacíos");
                 }else{
                     // Cuando los campos obligatorios no están vacíos se procede a crearse el evento
-
-                    // Añadimos el evento al servidor
-
+                    String cadenaJson;
+                    String cadenaFecha; //2004-10-19 10:23:54
+                    String cadenaFechaAviso;
 
                     // Creamos un objeto para tenerlo de manera local
                     Event evento = new Event();
                     evento.setTitulo(field_titulo.getText());
-                    evento.setColor((String) menuColores.getSelectedItem());
+
                     Integer auxinteger = new Integer(0);
                     evento.setDate(new GregorianCalendar(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
-                    evento.setNote(field_nota.getText());
+                    
+                    cadenaFecha = anio_fecha.getText()+"-"+mes_fecha.getText()+"-"+dia_fecha.getText()+" "+hora_fecha.getText()+":"+min_fecha.getText()+":00";
+                    cadenaJson = "{\"session_id\":"+usuario.getidSesion()+",\"date\":\""+cadenaFecha+"\",\"name\":"+field_titulo.getText();
+
                     if(!anio_recordatorio.getText().isEmpty() && !mes_recordatorio.getText().isEmpty() && !dia_recordatorio.getText().isEmpty() && !hora_recordatorio.getText().isEmpty() && !min_recordatorio.getText().isEmpty()){
                         evento.setAdvice_date(new GregorianCalendar(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
+                        cadenaFechaAviso = anio_recordatorio.getText()+"-"+mes_recordatorio.getText()+"-"+dia_recordatorio.getText()+" "+hora_recordatorio.getText()+":"+min_recordatorio.getText()+":00";
+                        cadenaJson = cadenaJson + cadenaFechaAviso;
                     }
+
+                    String color_vacio = "blanco";
+                    if ( !color_vacio.equals( (String) menuColores.getSelectedItem() ) ){
+                        evento.setColor((String) menuColores.getSelectedItem());
+                        cadenaJson = cadenaJson + ",\"color\":\""+(String)menuColores.getSelectedItem()+"\"";
+                    }
+
+                    if(!field_nota.getText().isEmpty()){
+                        evento.setNote(field_nota.getText());
+                        cadenaJson = cadenaJson + ",\"note\":\""+field_nota.getText()+"\"";
+                    }
+
+                    cadenaJson = cadenaJson + "}";
                     System.out.println(evento.toString());
-                    eventos.add(evento);
+
+                    // Añadimos el evento al servidor
+                    try{
+                        HttpResponse<String> response = send("createEvent",cadenaJson);
+
+                        if (response.statusCode() == 200){
+                            Integer int_aux = new Integer(0);
+                            usuario = new User();
+                            //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
+                            // Se quitan las llaves al body (primer y ultimo caracter)
+                            String strAux = response.body().substring(1,response.body().length()-1);
+                            System.out.println(strAux);
+                            // Se hace un split por comas
+                            String [] atributos = strAux.split(",");
+                            // Extraemos la información de los elemetnos que nos interesan, el 3
+                            System.out.println(int_aux.parseInt(atributos[2].split(":")[1].trim()));
+                            if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
+                                usuario.setidSesion(int_aux.parseInt(atributos[2].split(":")[1].trim()));
+                                usuario.setEmail(field_correo_iniciosesion.getText());
+                                usuario.setPasswd(field_pass_iniciosesion.getText());
+                                correcto = true;
+                            }
+                        }
+
+                        // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
+                        if (correcto){
+                            eventos.add(evento);
+                            ventana.getContentPane().removeAll();
+                            ventana.getContentPane().invalidate();           
+                            Pestañas();
+                            ventana.getContentPane().revalidate();
+                            ventana.getContentPane().setVisible(true);                
+                        }else{
+                            FrameError("El email o la contraseña son incorrectos");
+                        }
+
+                    }catch(Exception ex){
+                        FrameError("Vuelva a intentarlo :"+ex);
+                    }
+
 
                     // Se cierra la ventana flotante
                     frameCreaEventos.dispose();

@@ -8,7 +8,11 @@ class User{
     private String passwd;
     private int idSesion;
 
-    User(){}
+    User(){
+        this.email = null;
+        this.idSesion = null;
+        this.passwd = null;
+    }
     
     User(String email, int idSesion,String passwd) {
         this.email = email;
