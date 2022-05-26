@@ -9,9 +9,9 @@ class User{
     private int idSesion;
 
     User(){
-        this.email = null;
-        this.idSesion = null;
-        this.passwd = null;
+        //this.email = null;
+        //this.idSesion = null;
+        //this.passwd = null;
     }
     
     User(String email, int idSesion,String passwd) {

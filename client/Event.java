@@ -15,14 +15,14 @@ class Event{
 
     Event(){
 
-        this.idSesion = null;
-        this.id = null;
-        this.email = null;
-        this.date = null;
-        this.advice_date = null;
-        this.titulo = null;
-        this.color = null;
-        this.note = null;
+        //this.idSesion = idSesion;
+        //this.id = id;
+        //this.email = email;
+        //this.date = date;
+        //this.advice_date = advice_date;
+        //this.titulo = titulo;
+        //this.color = color;
+        //this.note = note;
 
     }
     
