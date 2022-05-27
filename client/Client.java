@@ -895,7 +895,7 @@ public class Client extends JFrame implements ActionListener{
 
         panelCreaEvento.add(boton_formulario_crear_evento);
 
-        x = x + 3*ancho + borde;
+        x = x + 3*ancho + 3*borde;
         y = y + alto + borde;
         panelCreaEvento.setBounds(0,0,x,y); 
         
@@ -1075,7 +1075,7 @@ public class Client extends JFrame implements ActionListener{
 
         panelModificaCredenciales.add(boton_formulario_modifica_credenciales);
 
-        x = x + 2*ancho + borde;
+        x = x + 2*ancho + 2*borde;
         y = y + alto + borde;
         panelModificaCredenciales.setBounds(0,0,x,y); 
         
