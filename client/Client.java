@@ -654,7 +654,6 @@ public class Client extends JFrame implements ActionListener{
         panelEventos = PanelEventos();
         panelCuenta = PanelCuenta();
         panelDePestanas.addTab("Calendario", null, panelCalendario, null);
-        panelDePestanas.addTab("Eventos", null, panelEventos, null);
         panelDePestanas.addTab("Cuenta", null, panelCuenta, null);
 
         panelDePestanas.setBounds(0,0,800,600);
@@ -672,8 +671,8 @@ public class Client extends JFrame implements ActionListener{
         JPanel panelGrafico = new JPanel();
         panelGrafico.setLayout(null);
         panelGrafico.setVisible(true);
-        panelGrafico.setLayout(new FlowLayout());
         
+
         // Se definen las coordenadas para colocar los objetos
         int lado = 60;
         int ancho = 60;
@@ -690,19 +689,25 @@ public class Client extends JFrame implements ActionListener{
         boton_mes_menor = new JButton("ant");
         boton_mes_menor.setBounds(x,y,ancho,alto);
         boton_mes_menor.addActionListener(this);     
-        panelCalendario.add(boton_mes_menor);
+        panelGrafico.add(boton_mes_menor);
 
         x = x+ancho;
         boton_mes_mayor = new JButton("sig");
         boton_mes_mayor.setBounds(x,y,ancho,alto);
         boton_mes_mayor.addActionListener(this);     
-        panelCalendario.add(boton_mes_mayor);
+        panelGrafico.add(boton_mes_mayor);
 
         x = x+ancho+espacio_x;
         label_fecha_iterador = new JLabel(String.valueOf(mes_iterador)+"/"+String.valueOf(anio_iterador));
         label_fecha_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         label_fecha_iterador.setBounds(x,y,ancho,alto);   
-        panelCalendario.add(label_fecha_iterador);
+        panelGrafico.add(label_fecha_iterador);
+
+        x = x+ancho+espacio_x;
+        boton_creaEvento = new JButton("Crear evento");
+        boton_creaEvento.addActionListener(this);
+        boton_creaEvento.setBounds(x,y,3*ancho,alto);
+        panelGrafico.add(boton_creaEvento);
 
         // Se crea la fila con los días del calendario grafico
         x = borde;
@@ -716,7 +721,7 @@ public class Client extends JFrame implements ActionListener{
             label_day_month[i][j].setBackground(Color.WHITE);
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             label_day_month[i][j].setBounds(x,y,lado,lado/2);
-            panelCalendario.add(label_day_month[i][j]);
+            panelGrafico.add(label_day_month[i][j]);
             x = x+lado;
         }
 
@@ -740,7 +745,7 @@ public class Client extends JFrame implements ActionListener{
             label_day_month[i][j].setBackground(Color.WHITE);
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             label_day_month[i][j].setBounds(x,y,lado,lado);
-            panelCalendario.add(label_day_month[i][j]);
+            panelGrafico.add(label_day_month[i][j]);
             x = x+lado;
           }
           y = y+lado;
@@ -748,8 +753,12 @@ public class Client extends JFrame implements ActionListener{
 
         x = x+borde;
         y = y+borde;
-        panelCalendario.setBounds(0,0,x,y);
-        
+        panelGrafico.setBounds(0,0,x,y);
+        panelCalendario.add(panelGrafico);
+        JPanel paneleventos = PanelEventos();
+        paneleventos.setBounds(x,0,300,y);
+        panelCalendario.add(paneleventos);
+
         return panelCalendario;       
     }
 
@@ -787,7 +796,7 @@ public class Client extends JFrame implements ActionListener{
             int_aux = matrix[i][j];
 
             if (int_aux!=0){
-                label_day_month[i][j].setText("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>");
+                label_day_month[i][j].setText("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"</div></html>");
                 label_day_month[i][j].setEnabled(true);
             }else{
                 label_day_month[i][j].setText("");
@@ -798,7 +807,7 @@ public class Client extends JFrame implements ActionListener{
         }
     }
 
-    // Método que crea la interfaz de la sección de eventos    
+    // Método que crea la interfaz de la sección de eventos dentro de la pestaña calendario  
     private JPanel PanelEventos(){
 
         JPanel panelEventos = new JPanel();
@@ -814,10 +823,6 @@ public class Client extends JFrame implements ActionListener{
         JLabel label_fecha = new JLabel(String.valueOf(dia_actual+"/"+mes_actual+"/"+anio_actual));
         barraSuperior.add(label_fecha);
 
-        boton_creaEvento = new JButton("Crear evento");
-        boton_creaEvento.addActionListener(this);
-        barraSuperior.add(boton_creaEvento);
-        
         panelEventos.add(barraSuperior,BorderLayout.NORTH);
 
         JPanel areaListaEventos = new JPanel();
@@ -871,6 +876,12 @@ public class Client extends JFrame implements ActionListener{
                     botonAux.setBackground(Color.WHITE);
                     botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                     botonAux.setBounds(x,y,ancho,alto);
+                    botonAux.addActionListener (new ActionListener () {
+                        public void actionPerformed(ActionEvent ae) {
+                            FrameEvento (e);
+                        }
+                    });
+
                     areaListaEventos.add(botonAux);
                     y=y+alto;
                     x=borde;
@@ -885,6 +896,153 @@ public class Client extends JFrame implements ActionListener{
         panelEventos.add(scrollBar,BorderLayout.CENTER);
 
         return panelEventos;
+    }
+
+    private void FrameEvento(Event evento){
+        JDialog frameEvento = new JDialog(this);
+        
+        JPanel panelCreaEvento = new JPanel();
+        panelCreaEvento.setLayout(null);
+        panelCreaEvento.setVisible(true);
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 120;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 10;
+
+        // Se crean las etiquetas y botones, y se añaden a la ventana
+        //FILA1
+        JButton botonAux = new JButton("");
+        botonAux.setEnabled(false);
+        botonAux.setForeground(color(evento.getColor()));
+        botonAux.setBackground(color(evento.getColor()));                
+        botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        botonAux.setBounds(x,y,alto,alto);
+        panelCreaEvento.add(botonAux);
+        x = x+alto;        
+        
+        JLabel label_titulo = new JLabel(evento.getTitulo());
+        label_titulo.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        label_titulo.setBounds(x,y,2*ancho,alto);
+        panelCreaEvento.add(label_titulo);
+
+        //FILA2
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_fecha1 = new JLabel("Fecha: ");
+        label_fecha1.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_fecha1);
+
+        x = x+ancho+espacio_x;
+        JLabel label_fecha2 = new JLabel(String.valueOf(evento.getDate().get(Calendar.YEAR))+"/"+String.valueOf(evento.getDate().get(Calendar.MONTH)+1)+"/"+String.valueOf(evento.getDate().get(Calendar.DAY_OF_MONTH))+" "+String.valueOf(evento.getDate().get(Calendar.HOUR))+":"+String.valueOf(evento.getDate().get(Calendar.MINUTE)));
+        label_fecha2.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_fecha2);
+        
+        //FILA2
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_fechaAviso = new JLabel("Fecha de aviso: ");
+        label_fechaAviso.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_fechaAviso);
+
+        x = x+ancho+espacio_x;
+        JLabel label_fechaAviso2 = new JLabel(String.valueOf(evento.getAdvice_date().get(Calendar.YEAR))+"/"+String.valueOf(evento.getAdvice_date().get(Calendar.MONTH)+1)+"/"+String.valueOf(evento.getAdvice_date().get(Calendar.DAY_OF_MONTH))+" "+String.valueOf(evento.getAdvice_date().get(Calendar.HOUR))+":"+String.valueOf(evento.getAdvice_date().get(Calendar.MINUTE)));
+        label_fechaAviso2.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_fechaAviso2);
+
+
+        JButton boton_borrar = new JButton("Borrar");
+        if (evento.getNote()!=null){
+            //FILA4
+            x = borde;
+            y=y+alto+espacio_y;
+            JLabel label_nota = new JLabel("Nota: ");
+            label_nota.setBounds(x,y,ancho,alto);    
+            panelCreaEvento.add(label_nota);
+            
+            //FILA5
+            x = borde;
+            y=y+alto+espacio_y;
+            JLabel field_nota = new JLabel();
+            field_nota.setBounds(x,y,3*ancho,5*alto);    
+            panelCreaEvento.add(field_nota);            
+            //FILA6
+            x = borde;
+            y=y+5*alto+espacio_y;
+            boton_borrar.setBounds(x,y,ancho,alto);
+        }else{
+            //FILA6
+            x = borde;
+            y=y+alto+espacio_y;            
+            boton_borrar.setBounds(x,y,ancho,alto);            
+        }
+
+
+        // Se define lo que realiza el boton del formulario para crear un evento
+        boton_borrar.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("##");
+                System.out.println("#");
+                System.out.println("BOTON --> Formulario crear evento");
+                String cadenaJson;
+                /*
+                try{
+                    HttpResponse<String> response = send("createEvent",cadenaJson);
+
+                    if (response.statusCode() == 200){
+                        Integer int_aux = new Integer(0);
+
+                        //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
+                        // Se quitan las llaves al body (primer y ultimo caracter)
+                        String strAux = response.body().substring(1,response.body().length()-1);
+
+                        // Se hace un split por comas
+                        String [] atributos = strAux.split(",");
+
+                        // Extraemos la información de los elemetnos que nos interesan, el 3
+                        System.out.println("El estado de la operación POST es: "+int_aux.parseInt(atributos[0].split(":")[1].trim()));
+                        
+                        if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
+
+                            evento.setId(int_aux.parseInt(atributos[2].split(":")[1].trim())); //TODO
+                            eventos.add(evento);
+                            ventana.getContentPane().removeAll();
+                            ventana.getContentPane().invalidate();           
+                            Pestañas();
+                            ventana.getContentPane().revalidate();
+                            ventana.getContentPane().setVisible(true);                                 
+                        }else{
+                            FrameError("Ha ocurrido un problema");
+                        }
+                    }
+
+                }catch(Exception ex){
+                    FrameError("Ha ocurrido un error,vuelva a intentarlo :"+ex);
+                    System.out.println("excepción:\n"+ex);
+                }
+                */
+                System.out.println("#");
+                System.out.println("##");
+                // Se cierra la ventana flotante
+                frameEvento.dispose();
+            
+            }
+        }); 
+
+        panelCreaEvento.add(boton_borrar);
+
+        x = x + 3*ancho + 3*borde;
+        y = y + alto + borde;
+        panelCreaEvento.setBounds(0,0,x,y); 
+        
+        frameEvento.add(panelCreaEvento);
+        frameEvento.setSize(x,y+25);
+        frameEvento.setTitle("Evento");
+        frameEvento.setVisible(true);
     }
 
     private void FrameCreaEventos(){
