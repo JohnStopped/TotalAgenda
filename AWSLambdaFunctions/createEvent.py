@@ -70,11 +70,40 @@ def lambda_handler(event, context):
                 # insert required values
                 cur.execute ("insert into events_use (event_id, email, date1, advice_date, name, color, note) values (%s,%s,%s,%s,%s,%s,%s)", (event_id,email,body['date'],advice_date.strftime('%Y-%m-%d %H:%M:%S'),name,color,note,))
                 
-                response = {
-                    "state": 1,
-                    "desc": "Event created succesfully",
-                    "event_id": event_id
-                }
+                cur.execute ("select event_id,date1 from events_use where email=%s order by date1 asc",(email,)) # Request for get the position order by date
+                
+                ddbb_list_event_id = cur.fetchall()
+                
+                if (ddbb_list_event_id != []):
+                    found = False
+                    event_pos = 0
+                    
+                    while (found != True):
+                        if (ddbb_list_event_id[event_pos][0] != event_id):
+                            event_pos = event_pos + 1
+                        else:
+                            found = True
+                    
+                    if (found == True):        
+                        response = {
+                            "state": 1,
+                            "desc": "Event created succesfully",
+                            "event_id": event_id,
+                            "position": event_pos
+                        }
+                        
+                    else:
+                        response = {
+                            "state": 1,
+                            "desc": "Event created succesfully, but position is not got",
+                            "event_id": event_id
+                        }
+                else:    
+                    response = {
+                        "state": 1,
+                        "desc": "Event created succesfully, but position is not got",
+                        "event_id": event_id
+                    }
                 
             else:    
                 response = {
