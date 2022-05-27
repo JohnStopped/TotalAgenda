@@ -47,7 +47,7 @@ public class Client extends JFrame implements ActionListener{
 
     // Apartado Evento
     private JButton boton_creaEvento;
-
+    private JPanel areaListaEventos;
     //Apartado de Cuenta
     private JButton boton_modifica_credenciales, boton_salir, boton_cerrarSesion;
 
@@ -652,28 +652,84 @@ public class Client extends JFrame implements ActionListener{
 
         JPanel areaListaEventos = new JPanel();
         areaListaEventos.setLayout(null);
-        areaListaEventos.setVisible(true);
         // Se definen las coordenadas para colocar los objetos
         int ancho = 200;
         int alto = 30;
-        int borde = 10;
+        int borde = 20;
         int x = borde;
         int y = borde;
         int espacio_x = 10;
         int espacio_y = 20;
         int i = 0;
-        /*
-        if (eventos.length()!=0){
-            JLabel[] labelEventos = new ArrayList();
-            for (event e: eventos){
-                labelEventos[i] = new JLabel(eventos.toString());
-                labelEventos[i].setBounds(x,y,ancho,alto);
-                labelEventos[i].add(areaListaEventos);
-                y=y+alto;
+        int j = 1;
+
+        Calendar fecha_actual = new GregorianCalendar();
+        //Comparamos unicamente la fecha no la hora
+        fecha_actual.set(Calendar.HOUR_OF_DAY,0);
+        fecha_actual.set(Calendar.MINUTE,0);
+        fecha_actual.set(Calendar.SECOND,0);
+        Calendar fecha_iterador = fecha_actual;
+        Calendar fechaAux = fecha_actual;
+        JButton botonAux;
+        JLabel labelAux;
+
+        List<JButton> botonEventos = new ArrayList();
+        List<JLabel> labelFechas = new ArrayList();
+        labelAux = new JLabel(fechaAux.get(Calendar.YEAR)+"/"+fechaAux.get(Calendar.MONTH)+"/"+fechaAux.get(Calendar.DATE));
+        labelAux.setBounds(x,y,ancho,alto);
+        areaListaEventos.add(labelAux);
+        labelFechas.add(labelAux);
+        y=y+alto;
+        if (eventos.size()!=0){
+            for (Event e: eventos){
+
+                fechaAux = e.getDate();
+                //Comparamos unicamente la fecha no la hora
+                fechaAux.set(Calendar.HOUR_OF_DAY,0);
+                fechaAux.set(Calendar.MINUTE,0);
+                fechaAux.set(Calendar.SECOND,0);               
+                
+                // La fecha del evento es anterior a la fecha del iterador
+                if( fecha_iterador.getInstance().compareTo(fechaAux.getInstance()) > 0 ){
+                    //No se imprime
+                }              
+                // La fecha del evento es despues a la fecha del iterador
+                else if( fecha_iterador.getInstance().compareTo(fechaAux.getInstance()) < 0 ){
+                    //Se crea el texto para el día del evento
+                    labelAux = new JLabel(fechaAux.get(Calendar.YEAR)+"/"+fechaAux.get(Calendar.MONTH)+"/"+fechaAux.get(Calendar.DATE));
+                    labelAux.setBounds(x,y,ancho,alto);
+                    areaListaEventos.add(labelAux);
+                    labelFechas.add(labelAux);
+                    y=y+alto;
+                    j++;
+                    //Se imprime el evento en cuestión
+                    botonAux = new JButton(e.toString());
+                    botonAux.setForeground(Color.BLACK);
+                    botonAux.setBackground(Color.WHITE);
+                    botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                    botonAux.setBounds(x+30,y,ancho,alto);
+                    areaListaEventos.add(botonAux);
+                    botonEventos.add(botonAux);
+                    y=y+alto;                    
+                }
+                // Las fechas son iguales
+                else if( fecha_iterador.getInstance().compareTo(fechaAux.getInstance()) == 0 ){
+                    // Se imprime el evento en cuestión, la fecha ya se ha impreso antes
+                    botonAux = new JButton(e.toString());
+                    botonAux.setForeground(Color.BLACK);
+                    botonAux.setBackground(Color.WHITE);
+                    botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                    botonAux.setBounds(x+30,y,ancho,alto);
+                    areaListaEventos.add(botonAux);
+                    botonEventos.add(botonAux);
+                    y=y+alto;
+                }
                 i++;
             }
         }
-        */        
+        
+        areaListaEventos.setVisible(true);
+
         JScrollPane scrollBar = new JScrollPane(areaListaEventos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panelEventos.add(scrollBar,BorderLayout.CENTER);
 
@@ -812,7 +868,6 @@ public class Client extends JFrame implements ActionListener{
                     FrameError("Hay campos obligatorios vacíos");
                 }else{
                     // Cuando los campos obligatorios no están vacíos se procede a crearse el evento
-                    boolean correcto = false;
                     String cadenaJson;
                     String cadenaFecha; //2004-10-19 10:23:54
                     String cadenaFechaAviso;
@@ -865,22 +920,16 @@ public class Client extends JFrame implements ActionListener{
                             
                             if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
 
-                                correcto = true;
                                 evento.setId(int_aux.parseInt(atributos[2].split(":")[1].trim())); //TODO
                                 eventos.add(evento);
+                                ventana.getContentPane().removeAll();
+                                ventana.getContentPane().invalidate();           
+                                Pestañas();
+                                ventana.getContentPane().revalidate();
+                                ventana.getContentPane().setVisible(true);                                 
+                            }else{
+                                FrameError("Ha ocurrido un problema");
                             }
-                        }
-
-                        // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
-                        if (correcto){
-                            System.out.println("Las credenciales son válidas");
-                            ventana.getContentPane().removeAll();
-                            ventana.getContentPane().invalidate();           
-                            Pestañas();
-                            ventana.getContentPane().revalidate();
-                            ventana.getContentPane().setVisible(true);                
-                        }else{
-                            FrameError("Ha ocurrido un problema");
                         }
 
                     }catch(Exception ex){

@@ -28,7 +28,6 @@ class Event{
     
     Event(int id, String email, Calendar date, Calendar advice_date, String titulo, String color, String note) {
         
-        this.idSesion = idSesion;
         this.id = id;
         this.email = email;
         this.date = date;
@@ -128,7 +127,11 @@ class Event{
 
     //toString
     public String toString(){
-        return (date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" "+ titulo);
+        String cadena = date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" | "+ titulo; 
+        if(note!=null){
+            cadena = cadena +" | "note;
+        }
+        return (cadena);
     }
 
 }
