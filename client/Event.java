@@ -128,9 +128,6 @@ class Event{
     //toString
     public String toString(){
         String cadena = date.get(Calendar.YEAR)+"/"+date.get(Calendar.MONTH)+"/"+date.get(Calendar.DAY_OF_MONTH)+" "+date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" | "+ titulo; 
-        if(note!=null){
-            cadena = cadena +" | Hay una nota";
-        }
         return (cadena);
     }
 

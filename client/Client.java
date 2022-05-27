@@ -623,11 +623,15 @@ public class Client extends JFrame implements ActionListener{
     }
 
     private Color color(String color){
-        String[] colores = {"blanco","rojo","verde","azul","amarillo","naranja","gris"};
+        String[] colores = {"white","rojo","verde","azul","amarillo","naranja","gris"};
         Color res = null;
-        if (color.contentEquals(colores[1])){
+        if (color.contentEquals(colores[0])){
+            res = Color.WHITE;
+        }else if (color.contentEquals("blanco")){
+            res = Color.WHITE;
+        }else if (color.contentEquals(colores[1])){
             res = Color.RED;
-        }else if (color.contentEquals(colores[2])){
+        }        else if (color.contentEquals(colores[2])){
             res = Color.GREEN;
         }else if (color.contentEquals(colores[3])){
             res = Color.BLUE;
@@ -865,8 +869,10 @@ public class Client extends JFrame implements ActionListener{
                     // Se imprime el evento en cuestión, la fecha ya se ha impreso antes
                     botonAux = new JButton("");
                     botonAux.setEnabled(false);
-                    botonAux.setForeground(color(e.getColor()));
-                    botonAux.setBackground(color(e.getColor()));                
+                    if (e.getColor()!=null){
+                        botonAux.setForeground(color(e.getColor()));
+                        botonAux.setBackground(color(e.getColor()));
+                    }                
                     botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                     botonAux.setBounds(x,y,alto,alto);
                     areaListaEventos.add(botonAux);
@@ -913,6 +919,7 @@ public class Client extends JFrame implements ActionListener{
         int y = borde;
         int espacio_x = 10;
         int espacio_y = 10;
+        String event_id = String.valueOf(evento.getId());
 
         // Se crean las etiquetas y botones, y se añaden a la ventana
         //FILA1
@@ -942,17 +949,18 @@ public class Client extends JFrame implements ActionListener{
         label_fecha2.setBounds(x,y,ancho,alto);    
         panelCreaEvento.add(label_fecha2);
         
-        //FILA2
-        x = borde;
-        y=y+alto+espacio_y;
-        JLabel label_fechaAviso = new JLabel("Fecha de aviso: ");
-        label_fechaAviso.setBounds(x,y,ancho,alto);    
-        panelCreaEvento.add(label_fechaAviso);
-
-        x = x+ancho+espacio_x;
-        JLabel label_fechaAviso2 = new JLabel(String.valueOf(evento.getAdvice_date().get(Calendar.YEAR))+"/"+String.valueOf(evento.getAdvice_date().get(Calendar.MONTH)+1)+"/"+String.valueOf(evento.getAdvice_date().get(Calendar.DAY_OF_MONTH))+" "+String.valueOf(evento.getAdvice_date().get(Calendar.HOUR))+":"+String.valueOf(evento.getAdvice_date().get(Calendar.MINUTE)));
-        label_fechaAviso2.setBounds(x,y,ancho,alto);    
-        panelCreaEvento.add(label_fechaAviso2);
+        if(evento.getAdvice_date()!=null){
+            //FILA2
+            x = borde;
+            y=y+alto+espacio_y;
+            JLabel label_fechaAviso = new JLabel("Fecha de aviso: ");
+            label_fechaAviso.setBounds(x,y,ancho,alto);    
+            panelCreaEvento.add(label_fechaAviso);            
+            x = x+ancho+espacio_x;
+            JLabel label_fechaAviso2 = new JLabel(String.valueOf(evento.getAdvice_date().get(Calendar.YEAR))+"/"+String.valueOf(evento.getAdvice_date().get(Calendar.MONTH)+1)+"/"+String.valueOf(evento.getAdvice_date().get(Calendar.DAY_OF_MONTH))+" "+String.valueOf(evento.getAdvice_date().get(Calendar.HOUR))+":"+String.valueOf(evento.getAdvice_date().get(Calendar.MINUTE)));
+            label_fechaAviso2.setBounds(x,y,ancho,alto);    
+            panelCreaEvento.add(label_fechaAviso2);
+        }
 
 
         JButton boton_borrar = new JButton("Borrar");
@@ -967,7 +975,7 @@ public class Client extends JFrame implements ActionListener{
             //FILA5
             x = borde;
             y=y+alto+espacio_y;
-            JLabel field_nota = new JLabel();
+            JLabel field_nota = new JLabel(evento.getNote());
             field_nota.setBounds(x,y,3*ancho,5*alto);    
             panelCreaEvento.add(field_nota);            
             //FILA6
@@ -988,10 +996,10 @@ public class Client extends JFrame implements ActionListener{
                 System.out.println("##");
                 System.out.println("#");
                 System.out.println("BOTON --> Formulario crear evento");
-                String cadenaJson;
-                /*
+                String cadenaJson="{\"event_id\":"+event_id+"}";
+
                 try{
-                    HttpResponse<String> response = send("createEvent",cadenaJson);
+                    HttpResponse<String> response = send("deleteEvent",cadenaJson);
 
                     if (response.statusCode() == 200){
                         Integer int_aux = new Integer(0);
@@ -1007,9 +1015,9 @@ public class Client extends JFrame implements ActionListener{
                         System.out.println("El estado de la operación POST es: "+int_aux.parseInt(atributos[0].split(":")[1].trim()));
                         
                         if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
+                            //Borramos el evento de la lista local
 
-                            evento.setId(int_aux.parseInt(atributos[2].split(":")[1].trim())); //TODO
-                            eventos.add(evento);
+                            eventos.remove(evento);
                             ventana.getContentPane().removeAll();
                             ventana.getContentPane().invalidate();           
                             Pestañas();
@@ -1024,7 +1032,7 @@ public class Client extends JFrame implements ActionListener{
                     FrameError("Ha ocurrido un error,vuelva a intentarlo :"+ex);
                     System.out.println("excepción:\n"+ex);
                 }
-                */
+
                 System.out.println("#");
                 System.out.println("##");
                 // Se cierra la ventana flotante
@@ -1228,12 +1236,12 @@ public class Client extends JFrame implements ActionListener{
                             System.out.println("El estado de la operación POST es: "+int_aux.parseInt(atributos[0].split(":")[1].trim()));
                             
                             if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
-
                                 evento.setId(int_aux.parseInt(atributos[2].split(":")[1].trim())); //TODO
-                                eventos.add(evento);
+                                eventos.add(new Integer (int_aux.parseInt(atributos[3].split(":")[1].trim())).intValue(),evento);
                                 ventana.getContentPane().removeAll();
                                 ventana.getContentPane().invalidate();           
                                 Pestañas();
+                                System.out.println("4");
                                 ventana.getContentPane().revalidate();
                                 ventana.getContentPane().setVisible(true);                                 
                             }else{
