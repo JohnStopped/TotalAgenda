@@ -43,7 +43,7 @@ public class Client extends JFrame implements ActionListener{
     
     private int mes_actual,anio_actual,dia_actual;
     private int mes_iterador,anio_iterador;
-    private JLabel[][] label_day_month;
+    private JButton[][] label_day_month;
 
     // Apartado Evento
     private JButton boton_creaEvento;
@@ -537,11 +537,11 @@ public class Client extends JFrame implements ActionListener{
         // Se crea la fila con los días del calendario grafico
         x = borde;
         y = y+alto+espacio_y;
-        label_day_month = new JLabel[6][7];
+        label_day_month = new JButton[6][7];
         String[] dias= {"L","M","X","J","V","S","D"};
         for (j=0; (j<7) ;j++){
-            label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+dias[j]+"</div></html>", SwingConstants.CENTER);
-
+            label_day_month[i][j] = new JButton("<html><div style='text-align: center;'>"+dias[j]+"</div></html>");
+            label_day_month[i][j].setEnabled(false);
             label_day_month[i][j].setForeground(Color.BLACK);
             label_day_month[i][j].setBackground(Color.WHITE);
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -559,10 +559,11 @@ public class Client extends JFrame implements ActionListener{
             int_aux = matrix[i][j];
 
             if (int_aux!=0){
-                label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>", SwingConstants.CENTER);
+                label_day_month[i][j] = new JButton("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>");
+                label_day_month[i][j].setEnabled(true);
             }else{
-                label_day_month[i][j] = new JLabel("");
-                //setEnabled(false)
+                label_day_month[i][j] = new JButton("");
+                label_day_month[i][j].setEnabled(false);
             }
 
             label_day_month[i][j].setForeground(Color.BLACK);
@@ -617,8 +618,10 @@ public class Client extends JFrame implements ActionListener{
 
             if (int_aux!=0){
                 label_day_month[i][j].setText("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>");
+                label_day_month[i][j].setEnabled(true);
             }else{
                 label_day_month[i][j].setText("");
+                label_day_month[i][j].setEnabled(false);
             }
           }
           
