@@ -74,7 +74,18 @@ public class Client extends JFrame implements ActionListener{
         this.setLayout(new BorderLayout()); //Layout absoluto
         this.setSize(800,600);
         this.setResizable(false); //No redimensionable
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Para que la ventana se cierre
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); //Para que no se haga nada y siga el programa
+        // Gestionamos el evento de cerrar sesión
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.out.println("Se ha pulsado el boton para cerrar la ventana");
+                if(usuario!=null){
+                    close();
+                }
+                System.exit(0);                    
+            }
+        });        
         
         // Se crean la interfaz de la sección de inicio de sesión
         this.add(PanelInicioSesion(),BorderLayout.CENTER);
@@ -91,10 +102,11 @@ public class Client extends JFrame implements ActionListener{
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         System.out.println("//-----");
+        System.out.println("//La cadena Json enviada es:\n" + "//   " + cadena);         
         // print status code
         System.out.println("//El status de la petición es: " + response.statusCode());
         // print response body
-        System.out.println("//La respuesta de la petición es: \n" + response.body());
+        System.out.println("//La respuesta de la petición es: \n" + "//   " + response.body());
         System.out.println("//-----");
         return response;        
     }
@@ -167,7 +179,7 @@ public class Client extends JFrame implements ActionListener{
         if (e.getSource()==boton_salir) {
             System.out.println("BOTON --> Fin Aplicación");
             close();
-            System.exit(0);
+            System.exit(0);            
         }   
         if (e.getSource()==boton_cerrarSesion) {
             System.out.println("BOTON --> Cierra Sesión --> Panel Inicio Sesión");
@@ -185,33 +197,25 @@ public class Client extends JFrame implements ActionListener{
     private void close(){
 
         try{
-            HttpRequest request = HttpRequest.newBuilder()
-                    .POST(HttpRequest.BodyPublishers.ofString(new StringBuilder("{\"email\": \""+usuario.getEmail()+"\", \"passwd\": \""+usuario.getPasswd()+"\"}").toString()))
-                    .uri(URI.create("https://2296n1t8g9.execute-api.eu-west-1.amazonaws.com/totalagenda/closeSession"))
-                    .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
-                    .header("Content-Type", "application/json")
-                    .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            // print status code
-            System.out.println(response.statusCode());
-            // print response body
-            System.out.println(response.body());
+            String cadenaJson = "{\"email\": \""+usuario.getEmail()+"\", \"passwd\": \""+usuario.getPasswd()+"\"}";
+            HttpResponse<String> response = send("closeSession",cadenaJson);
 
             if (response.statusCode() == 200){
                 Integer int_aux = new Integer(0);
+
                 //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
                 // Se quitan las llaves al body (primer y ultimo caracter)
                 String strAux = response.body().substring(1,response.body().length()-1);
+               
                 // Se hace un split por comas
                 String [] atributos = strAux.split(",");
-                // Extraemos la información de los elemetnos que nos interesan, el 3
+                
             }
         }catch(Exception ex){
             System.out.println("Excepción al cerrar sesión: \n" + ex);
         }
         //ventana.dispose();
     }
-
 
     // Método que crea la interfaz correspondiente al incio de sesión
     private JPanel PanelInicioSesion(){
@@ -275,7 +279,8 @@ public class Client extends JFrame implements ActionListener{
                     boolean correcto = false;
 
                     try{
-                         HttpResponse<String> response = send("initSession","{\"email\": \""+field_correo_iniciosesion.getText()+"\", \"passwd\": \""+field_pass_iniciosesion.getText()+"\"}");
+                        String cadenaJson = "{\"email\": \""+field_correo_iniciosesion.getText()+"\", \"passwd\": \""+field_pass_iniciosesion.getText()+"\"}";
+                        HttpResponse<String> response = send("initSession",cadenaJson);
 
                         if (response.statusCode() == 200){
                             Integer int_aux = new Integer(0);
@@ -288,7 +293,7 @@ public class Client extends JFrame implements ActionListener{
                             // Extraemos la información de los elemetnos que nos interesan, el 3
 
                             if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
-                                usuario.setidSesion(int_aux.parseInt(atributos[2].split(":")[1].trim()));
+                                usuario.setIdSesion(int_aux.parseInt(atributos[2].split(":")[1].trim()));
                                 usuario.setEmail(field_correo_iniciosesion.getText());
                                 usuario.setPasswd(field_pass_iniciosesion.getText());
                                 correcto = true;
@@ -400,7 +405,7 @@ public class Client extends JFrame implements ActionListener{
                 // En caso de que esten vacíos los campos se devuelve un error en una ventana flotante              
                 if (field_correo.getText().isEmpty() || field_pass1.getText().isEmpty() || field_pass2.getText().isEmpty() ){
                     FrameError("Hay campos obligatorios vacíos");
-                }else if (field_pass1.getText().equals(field_pass2.getText())) {
+                }else if (field_pass1.getText().contentEquals(field_pass2.getText())) {
                     // En caso en que los campos no estén vacíos, y las contraseñas sean iguales se crea el usuario y se accede a la ventana de inicio de sesión
 
                     // Se añade al usuario
@@ -812,21 +817,21 @@ public class Client extends JFrame implements ActionListener{
                     // Creamos un objeto para tenerlo de manera local
                     Event evento = new Event();
                     evento.setTitulo(field_titulo.getText());
-                    evento.setidSesion(usuario.getidSesion());
+                    evento.setIdSesion(usuario.getIdSesion());
                     Integer auxinteger = new Integer(0);
                     evento.setDate(new GregorianCalendar(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
                     
                     cadenaFecha = anio_fecha.getText()+"-"+mes_fecha.getText()+"-"+dia_fecha.getText()+" "+hora_fecha.getText()+":"+min_fecha.getText()+":00";
-                    cadenaJson = "{\"session_id\":"+usuario.getidSesion()+",\"date\":\""+cadenaFecha+"\",\"name\":"+field_titulo.getText();
+                    cadenaJson = "{\"session_id\":"+usuario.getIdSesion()+",\"date\":\""+cadenaFecha+"\",\"name\":\""+field_titulo.getText()+"\"";
 
                     if(!anio_recordatorio.getText().isEmpty() && !mes_recordatorio.getText().isEmpty() && !dia_recordatorio.getText().isEmpty() && !hora_recordatorio.getText().isEmpty() && !min_recordatorio.getText().isEmpty()){
                         evento.setAdvice_date(new GregorianCalendar(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
-                        cadenaFechaAviso = anio_recordatorio.getText()+"-"+mes_recordatorio.getText()+"-"+dia_recordatorio.getText()+" "+hora_recordatorio.getText()+":"+min_recordatorio.getText()+":00";
+                        cadenaFechaAviso = ",\"advice_date\":\""+anio_recordatorio.getText()+"-"+mes_recordatorio.getText()+"-"+dia_recordatorio.getText()+" "+hora_recordatorio.getText()+":"+min_recordatorio.getText()+":00\"";
                         cadenaJson = cadenaJson + cadenaFechaAviso;
                     }
 
                     String color_vacio = "blanco";
-                    if ( !color_vacio.equals( (String) menuColores.getSelectedItem() ) ){
+                    if ( !color_vacio.contentEquals( (String) menuColores.getSelectedItem() ) ){
                         evento.setColor((String) menuColores.getSelectedItem());
                         cadenaJson = cadenaJson + ",\"color\":\""+(String)menuColores.getSelectedItem()+"\"";
                     }
@@ -836,8 +841,7 @@ public class Client extends JFrame implements ActionListener{
                         cadenaJson = cadenaJson + ",\"note\":\""+field_nota.getText()+"\"";
                     }
 
-                    cadenaJson = cadenaJson + "}";
-                    System.out.println("La cadena Json que se va a enviar al servidor es la siguiente:\n"+cadenaJson);                    
+                    cadenaJson = cadenaJson + "}";                   
 
                     // Añadimos el evento al servidor
                     try{
@@ -924,7 +928,7 @@ public class Client extends JFrame implements ActionListener{
         panelCuenta.add(label_correo);
 
         y=y+alto+espacio_y;
-        JLabel label_correo2 = new JLabel("usuario.getEmail()");
+        JLabel label_correo2 = new JLabel(usuario.getEmail());
         label_correo2.setBounds(x,y,ancho,alto);
         panelCuenta.add(label_correo2);
 
@@ -976,9 +980,9 @@ public class Client extends JFrame implements ActionListener{
         panelModificaCredenciales.add(label_correo);
         
         x = x+ancho+espacio_x;
-        JTextField field_correo = new JTextField("usuario.getEmail()");
-        field_correo.setBounds(x,y,ancho,alto);
-        panelModificaCredenciales.add(field_correo);
+        JLabel label_correo2 = new JLabel(usuario.getEmail());
+        label_correo2.setBounds(x,y,ancho,alto);
+        panelModificaCredenciales.add(label_correo2);
 
         //FILA2
         x = borde;
@@ -1028,26 +1032,40 @@ public class Client extends JFrame implements ActionListener{
                 System.out.println("##");
                 System.out.println("#");
                 System.out.println("BOTON Formulario para modificar credenciales");
-                if (field_correo.getText().isEmpty() || field_password3.getText().isEmpty() ){
+                if (field_password1.getText().isEmpty() || field_password2.getText().isEmpty() || field_password3.getText().isEmpty() ){
                     FrameError("Hay campos obligatorios vacíos");
-                }else if( (field_password1.getText().isEmpty()) != (field_password2.getText().isEmpty()) ){
-                    FrameError("Hay campos obligatorios vacíos");
-                }else if( field_password1.getText().equals(field_password2.getText().isEmpty()) ){
-                    FrameError("Las constraseñas son diferentes");
+                }else if( !field_password1.getText().contentEquals(field_password2.getText()) ){
+                    FrameError("Las constraseñas nuevas son diferentes");
                 }else{
-                    boolean correcto = false;
                     
-                    //Se accede a la base de datos con el usuario y contraseña introducidas usuario.getEmail() field_password3.getText()
+                    //Se accede a la base de datos con el usuario y contraseña introducidas usuario.getEmail() 
+                    try{
+                        String cadenaJson = "{\"email\":\""+usuario.getEmail()+"\",\"passwd\":\""+field_password1.getText()+"\",\"old_passwd\":\""+field_password3.getText()+"\"}";
+                        HttpResponse<String> response = send("modifyUser",cadenaJson);
 
-                    if (correcto == true){
-                        if(field_password1.getText().isEmpty() == false){
-                            //se hace el update de correo y contraseña
-                            //usuario.setEmail() = field_correo.getText();
+                        if (response.statusCode() == 200){
+                            Integer int_aux = new Integer(0);
+
+                            //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
+                            // Se quitan las llaves al body (primer y ultimo caracter)
+                            String strAux = response.body().substring(1,response.body().length()-1);
+
+                            // Se hace un split por comas
+                            String [] atributos = strAux.split(",");
+
+                            // Extraemos la información de los elemetnos que nos interesan, el 3
+                            System.out.println("El estado de la operación POST es: "+int_aux.parseInt(atributos[0].split(":")[1].trim()));
+                            
+                            if ( (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1) ){
+                                //se hace el update de correo
+                                usuario.setPasswd(field_password1.getText());
+                                frameModificaCredenciales.dispose();
+                            }
                         }else{
-                            //Se hace el update del correo unicamente
-                            //usuario.setEmail() = field_correo.getText();
+                            FrameError("La contraseña antigua no es correcta");
                         }
-                        frameModificaCredenciales.dispose();
+                    }catch(Exception ex){
+                        System.out.print("Excepción: \n"+ex);
                     }
                 }
                 System.out.println("#");                

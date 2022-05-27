@@ -30,12 +30,12 @@ class User{
         return this.email;
     }
 
-    public void setidSesion(int idSesion){
+    public void setIdSesion(int idSesion){
 
         this.idSesion = idSesion;
     }
 
-    public int getidSesion(){
+    public int getIdSesion(){
 
         return this.idSesion;
     }
