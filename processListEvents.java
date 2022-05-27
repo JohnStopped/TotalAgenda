@@ -1,4 +1,4 @@
-private static List<Event> processListEvents(String body) {
+private List<Event> processListEvents(String body) {
 
 	/*
 	{

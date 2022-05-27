@@ -129,7 +129,7 @@ class Event{
     public String toString(){
         String cadena = date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" | "+ titulo; 
         if(note!=null){
-            cadena = cadena +" | "note;
+            cadena = cadena +" | " + note;
         }
         return (cadena);
     }
