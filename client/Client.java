@@ -249,7 +249,7 @@ public class Client extends JFrame implements ActionListener{
         int state = new Integer(json_att[0].split(":")[1].trim()).intValue(); //Recover state
 
         if (state == 1) {
-
+            list = new ArrayList();
             String list_events = in_body.substring(in_body.indexOf('[')+1, in_body.indexOf(']'));
             
             List<String> events = new ArrayList<String>();
@@ -272,7 +272,7 @@ public class Client extends JFrame implements ActionListener{
                     flag = false;
                 }
             }
-            System.out.println("3");
+
             int event_id;
             String str_date;
             String str_advice_date;
@@ -281,21 +281,30 @@ public class Client extends JFrame implements ActionListener{
             String note;
             String[] date_pt;
             String[] advice_date_pt;
-            GregorianCalendar date; 
-            GregorianCalendar advice_date;
+            Calendar date; 
+            Calendar advice_date;
 
             for (String str_event : events) {
                 String[] att_value = str_event.split(",");
 
                 event_id = new Integer(att_value[0].split(":")[1].trim()).intValue();
 
-                str_date = att_value[1].split(":")[1].trim();
+                str_date = att_value[1].split(": ")[1].trim();
+
                 str_date = str_date.substring(1,str_date.length()-1);
                 date_pt = str_date.split(" ");
 
-                str_advice_date = att_value[2].split(":")[1].trim();
-                str_advice_date = str_advice_date.substring(1,str_advice_date.length()-1);
-                advice_date_pt = str_advice_date.split(" ");
+
+                str_advice_date = att_value[2].split(": ")[1].trim();
+                
+
+                if(str_advice_date.charAt(0)=='\"'){   
+                    str_advice_date = str_advice_date.substring(1,str_advice_date.length()-1);
+                    advice_date_pt = str_advice_date.split(" ");
+                    advice_date = new GregorianCalendar(new Integer(advice_date_pt[0].split("-")[0]).intValue(),new Integer(advice_date_pt[0].split("-")[1]).intValue(),new Integer(advice_date_pt[0].split("-")[2]).intValue(),new Integer(advice_date_pt[1].split(":")[0]).intValue(),new Integer(advice_date_pt[1].split(":")[1]).intValue(),new Integer(advice_date_pt[1].split(":")[2]).intValue());
+                }else {
+                    advice_date = null;
+                }
 
                 name = att_value[3].split(":")[1].trim();
                 name = name.substring(1,name.length()-1); 
@@ -303,27 +312,29 @@ public class Client extends JFrame implements ActionListener{
                 color = att_value[4].split(":")[1].trim();
                 color = color.substring(1,color.length()-1);
 
+
                 note = att_value[5].split(":")[1].trim();
                 if (note.length() > 2)
                     note = note.substring(1,note.length()-1);
                 else 
                     note = null;
+                
+                date = new GregorianCalendar(new Integer(date_pt[0].split("-")[0]).intValue(),new Integer(date_pt[0].split("-")[1]).intValue(),new Integer(date_pt[0].split("-")[2]).intValue(),new Integer(date_pt[1].split(":")[0]).intValue(),new Integer(date_pt[1].split(":")[1]).intValue(),new Integer(date_pt[1].split(":")[2]).intValue());
+                
 
-                date = new GregorianCalendar(new Integer(date_pt[0].split("-")[0]).intValue(),new Integer(date_pt[0].split("-")[1]).intValue(),new Integer(date_pt[0].split("-")[2]).intValue(),new Integer(date_pt[1].split("-")[0]).intValue(),new Integer(date_pt[1].split("-")[1]).intValue(),new Integer(date_pt[1].split("-")[2]).intValue());
-                if (str_advice_date.contentEquals("null")) {
-                    advice_date = new GregorianCalendar(new Integer(advice_date_pt[0].split("-")[0]).intValue(),new Integer(advice_date_pt[0].split("-")[1]).intValue(),new Integer(advice_date_pt[0].split("-")[2]).intValue(),new Integer(advice_date_pt[1].split("-")[0]).intValue(),new Integer(advice_date_pt[1].split("-")[1]).intValue(),new Integer(advice_date_pt[1].split("-")[2]).intValue());
-                }
-                else {
-                    advice_date = null;
-                } 
-                
-                
                 Event obj_event = new Event(event_id,usuario.getEmail(),date,advice_date,name,color,note);
+                System.out.println(obj_event.getId());
+                System.out.println(obj_event.getEmail());
+                System.out.println(obj_event.getDate());
+                System.out.println(obj_event.getAdvice_date());
+                System.out.println(obj_event.getTitulo());
+                System.out.println(obj_event.getColor());
+                System.out.println(obj_event.getNote());
+                System.out.println("");
                 list.add(obj_event);
             }       
 
         }
-        System.out.println("4");
         return list;
 
     }
@@ -611,6 +622,25 @@ public class Client extends JFrame implements ActionListener{
         return panelCreaCuenta;
     }
 
+    private Color color(String color){
+        String[] colores = {"blanco","rojo","verde","azul","amarillo","naranja","gris"};
+        Color res = null;
+        if (color.contentEquals(colores[1])){
+            res = Color.RED;
+        }else if (color.contentEquals(colores[2])){
+            res = Color.GREEN;
+        }else if (color.contentEquals(colores[3])){
+            res = Color.BLUE;
+        }else if (color.contentEquals(colores[4])){
+            res = Color.YELLOW;
+        }else if (color.contentEquals(colores[5])){
+            res = Color.ORANGE;
+        }else if (color.contentEquals(colores[6])){
+            res = Color.GRAY;
+        }
+        return res;
+    }
+
     // Método para crear las Pestañas de la aplicación
     private void Pestañas(){
 
@@ -639,6 +669,11 @@ public class Client extends JFrame implements ActionListener{
         panelCalendario.setVisible(true);
         //panelCalendario.setBackground(Color.GREEN); // Color del fondo
 
+        JPanel panelGrafico = new JPanel();
+        panelGrafico.setLayout(null);
+        panelGrafico.setVisible(true);
+        panelGrafico.setLayout(new FlowLayout());
+        
         // Se definen las coordenadas para colocar los objetos
         int lado = 60;
         int ancho = 60;
@@ -694,7 +729,7 @@ public class Client extends JFrame implements ActionListener{
             int_aux = matrix[i][j];
 
             if (int_aux!=0){
-                label_day_month[i][j] = new JButton("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>");
+                label_day_month[i][j] = new JButton("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"</div></html>");
                 label_day_month[i][j].setEnabled(true);
             }else{
                 label_day_month[i][j] = new JButton("");
@@ -806,15 +841,7 @@ public class Client extends JFrame implements ActionListener{
         Calendar fecha_iterador = fecha_actual;
         Calendar fechaAux = fecha_actual;
         JButton botonAux;
-        JLabel labelAux;
 
-        List<JButton> botonEventos = new ArrayList();
-        List<JLabel> labelFechas = new ArrayList();
-        labelAux = new JLabel(fechaAux.get(Calendar.YEAR)+"/"+fechaAux.get(Calendar.MONTH)+"/"+fechaAux.get(Calendar.DATE));
-        labelAux.setBounds(x,y,ancho,alto);
-        areaListaEventos.add(labelAux);
-        labelFechas.add(labelAux);
-        y=y+alto;
         if (eventos.size()!=0){
             for (Event e: eventos){
 
@@ -828,36 +855,25 @@ public class Client extends JFrame implements ActionListener{
                 if( fecha_iterador.getInstance().compareTo(fechaAux.getInstance()) > 0 ){
                     //No se imprime
                 }              
-                // La fecha del evento es despues a la fecha del iterador
-                else if( fecha_iterador.getInstance().compareTo(fechaAux.getInstance()) < 0 ){
-                    //Se crea el texto para el día del evento
-                    labelAux = new JLabel(fechaAux.get(Calendar.YEAR)+"/"+fechaAux.get(Calendar.MONTH)+"/"+fechaAux.get(Calendar.DATE));
-                    labelAux.setBounds(x,y,ancho,alto);
-                    areaListaEventos.add(labelAux);
-                    labelFechas.add(labelAux);
-                    y=y+alto;
-                    j++;
-                    //Se imprime el evento en cuestión
-                    botonAux = new JButton(e.toString());
-                    botonAux.setForeground(Color.BLACK);
-                    botonAux.setBackground(Color.WHITE);
-                    botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                    botonAux.setBounds(x+30,y,ancho,alto);
-                    areaListaEventos.add(botonAux);
-                    botonEventos.add(botonAux);
-                    y=y+alto;                    
-                }
                 // Las fechas son iguales
                 else if( fecha_iterador.getInstance().compareTo(fechaAux.getInstance()) == 0 ){
                     // Se imprime el evento en cuestión, la fecha ya se ha impreso antes
+                    botonAux = new JButton("");
+                    botonAux.setEnabled(false);
+                    botonAux.setForeground(color(e.getColor()));
+                    botonAux.setBackground(color(e.getColor()));                
+                    botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                    botonAux.setBounds(x,y,alto,alto);
+                    areaListaEventos.add(botonAux);
+                    x = x+alto;
                     botonAux = new JButton(e.toString());
                     botonAux.setForeground(Color.BLACK);
                     botonAux.setBackground(Color.WHITE);
                     botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                    botonAux.setBounds(x+30,y,ancho,alto);
+                    botonAux.setBounds(x,y,ancho,alto);
                     areaListaEventos.add(botonAux);
-                    botonEventos.add(botonAux);
                     y=y+alto;
+                    x=borde;
                 }
                 i++;
             }
@@ -889,12 +905,12 @@ public class Client extends JFrame implements ActionListener{
 
         // Se crean las etiquetas y botones, y se añaden a la ventana
         //FILA1
-        JTextField field_titulo = new JTextField("Título");
+        JTextField field_titulo = new JTextField("Titulo");
         field_titulo.setBounds(x,y,2*ancho,alto);
         panelCreaEvento.add(field_titulo);
 
         x = x+2*ancho+espacio_x*2;
-        String[] colores = {"blanco","rojo","verde","azul","amarillo","naranja","negro","gris"};
+        String[] colores = {"blanco","rojo","verde","azul","amarillo","naranja","gris"};
         JComboBox<String> menuColores = new JComboBox<String>(colores);
         menuColores.setBounds(x,y,ancho*2/3,alto);
         panelCreaEvento.add(menuColores);
