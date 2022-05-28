@@ -318,7 +318,7 @@ public class Client extends JFrame implements ActionListener{
                     note = note.substring(1,note.length()-1);
                 else 
                     note = null;
-                
+                System.out.println(new Integer(date_pt[0].split("-")[2]).intValue());
                 date = new Date(new Integer(date_pt[0].split("-")[0]).intValue(),new Integer(date_pt[0].split("-")[1]).intValue(),new Integer(date_pt[0].split("-")[2]).intValue(),new Integer(date_pt[1].split(":")[0]).intValue(),new Integer(date_pt[1].split(":")[1]).intValue(),new Integer(date_pt[1].split(":")[2]).intValue());
                 
 
@@ -406,7 +406,7 @@ public class Client extends JFrame implements ActionListener{
         //FILA3
         x=borde_x;
         y=y+alto+espacio_x;
-        JButton boton_formulario_login = new JButton("Inicar Sesión");
+        JButton boton_formulario_login = new JButton("Iniciar Sesión");
         boton_formulario_login.setBounds(x,y,ancho,alto-5);
 
         //Definimos lo que realiza el botón del formulario de inicio se sesión
@@ -651,7 +651,7 @@ public class Client extends JFrame implements ActionListener{
         // Se configura la ventana
         this.setTitle("TotalAgenda"); //Título del JFrame
         this.setSize(800,600); //Dimensiones del JFrame (ancho,alto) - se le añaden 25 de alto para los del marco superior de la ventana y 25 para los de la barra de menu
-        this.setResizable(true); //Redimensionable
+        this.setResizable(false); //Redimensionable
 
         JTabbedPane panelDePestanas = new JTabbedPane(JTabbedPane.TOP);
         panelCalendario = PanelCalendario();
@@ -760,7 +760,7 @@ public class Client extends JFrame implements ActionListener{
         panelGrafico.setBounds(0,0,x,y);
         panelCalendario.add(panelGrafico);
         JPanel paneleventos = PanelEventos();
-        paneleventos.setBounds(x,0,300,y);
+        paneleventos.setBounds(x,0,350,y);
         panelCalendario.add(paneleventos);
 
         return panelCalendario;       
@@ -832,9 +832,9 @@ public class Client extends JFrame implements ActionListener{
         JPanel areaListaEventos = new JPanel();
         areaListaEventos.setLayout(null);
         // Se definen las coordenadas para colocar los objetos
-        int ancho = 200;
+        int ancho = 280;
         int alto = 30;
-        int borde = 20;
+        int borde = 15;
         int x = borde;
         int y = borde;
         int espacio_x = 10;
@@ -854,7 +854,7 @@ public class Client extends JFrame implements ActionListener{
         if (eventos.size()!=0){
             for (Event e: eventos){
 
-                fechaAux = new GregorianCalendar(e.getDate().getYear(),e.getDate().getMonth(),e.getDate().getDay(),e.getDate().getHours(),e.getDate().getMinutes());
+                fechaAux = new GregorianCalendar(e.getDate().getYear(),e.getDate().getMonth(),e.getDate().getDate(),e.getDate().getHours(),e.getDate().getMinutes());
                 //Comparamos unicamente la fecha no la hora
                 fechaAux.set(Calendar.HOUR_OF_DAY,0);
                 fechaAux.set(Calendar.MINUTE,0);
@@ -945,7 +945,7 @@ public class Client extends JFrame implements ActionListener{
         panelCreaEvento.add(label_fecha1);
 
         x = x+ancho+espacio_x;
-        JLabel label_fecha2 = new JLabel(evento.getDate().getYear()+"/"+evento.getDate().getMonth()+"/"+evento.getDate().getDay()+" "+evento.getDate().getHours() +":"+ evento.getDate().getMinutes());
+        JLabel label_fecha2 = new JLabel(evento.getDate().getYear()+"/"+evento.getDate().getMonth()+"/"+evento.getDate().getDate()+" "+evento.getDate().getHours() +":"+ evento.getDate().getMinutes());
         label_fecha2.setBounds(x,y,ancho,alto);    
         panelCreaEvento.add(label_fecha2);
         
@@ -957,7 +957,7 @@ public class Client extends JFrame implements ActionListener{
             label_fechaAviso.setBounds(x,y,ancho,alto);    
             panelCreaEvento.add(label_fechaAviso);            
             x = x+ancho+espacio_x;
-            JLabel label_fechaAviso2 = new JLabel(evento.getAdvice_date().getYear()+"/"+evento.getAdvice_date().getMonth()+"/"+evento.getAdvice_date().getDay()+" "+evento.getAdvice_date().getHours() +":"+ evento.getAdvice_date().getMinutes());
+            JLabel label_fechaAviso2 = new JLabel(evento.getAdvice_date().getYear()+"/"+evento.getAdvice_date().getMonth()+"/"+evento.getAdvice_date().getDate()+" "+evento.getAdvice_date().getHours() +":"+ evento.getAdvice_date().getMinutes());
             label_fechaAviso2.setBounds(x,y,ancho,alto);    
             panelCreaEvento.add(label_fechaAviso2);
         }
