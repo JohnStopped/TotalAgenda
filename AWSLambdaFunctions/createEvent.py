@@ -57,6 +57,8 @@ def lambda_handler(event, context):
             
             if ('advice_date' in body): #if advice_date is present in the msg, use it
                 advice_date = datetime.strptime(body['advice_date'],'%Y-%m-%d %H:%M:%S')
+            else:
+                advice_date = None
             
             if ('color' in body): #if color is present in the msg, use it
                 color = body['color']    
@@ -65,11 +67,14 @@ def lambda_handler(event, context):
                 note = body['note']    
                 
             # check for exactly the same data
-            cur.execute("select * from events_use where email=%s and date1=%s and advice_date=%s and name=%s;", (email,body['date'],advice_date.strftime('%Y-%m-%d %H:%M:%S'),name,))
+            cur.execute("select * from events_use where email=%s and date1=%s and name=%s;", (email,body['date'],name,))
             if (cur.fetchone() == None): 
                 # insert required values
-                cur.execute ("insert into events_use (event_id, email, date1, advice_date, name, color, note) values (%s,%s,%s,%s,%s,%s,%s)", (event_id,email,body['date'],advice_date.strftime('%Y-%m-%d %H:%M:%S'),name,color,note,))
-                
+                if (advice_date != None):
+                    cur.execute ("insert into events_use (event_id, email, date1, advice_date, name, color, note) values (%s,%s,%s,%s,%s,%s,%s)", (event_id,email,body['date'],advice_date.strftime('%Y-%m-%d %H:%M:%S'),name,color,note,))
+                else:
+                    cur.execute ("insert into events_use (event_id, email, date1, name, color, note) values (%s,%s,%s,%s,%s,%s)", (event_id,email,body['date'],name,color,note,))
+                    
                 cur.execute ("select event_id,date1 from events_use where email=%s order by date1 asc",(email,)) # Request for get the position order by date
                 
                 ddbb_list_event_id = cur.fetchall()
