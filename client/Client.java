@@ -44,6 +44,7 @@ public class Client extends JFrame implements ActionListener{
     private int mes_actual,anio_actual,dia_actual;
     private int mes_iterador,anio_iterador;
     private JButton[][] label_day_month;
+    private List<Date> fechasEventos;
 
     // Apartado Evento
     private JButton boton_creaEvento;
@@ -58,7 +59,8 @@ public class Client extends JFrame implements ActionListener{
         
         // Esta variable contendrá los eventos del usuario que existan
         eventos = new ArrayList();
-        
+        fechasEventos = new ArrayList();
+
         // Se crea el calendario para obtener el dia mes y año actual
         Calendar calendario = new GregorianCalendar();
         mes_actual = calendario.get(Calendar.MONTH)+1 ;
@@ -676,6 +678,7 @@ public class Client extends JFrame implements ActionListener{
         panelGrafico.setLayout(null);
         panelGrafico.setVisible(true);
         
+        JPanel paneleventos = PanelEventos();
 
         // Se definen las coordenadas para colocar los objetos
         int lado = 60;
@@ -731,7 +734,7 @@ public class Client extends JFrame implements ActionListener{
 
         // Se crea el calendario gráfico completo con el 
         y = y+lado/2;
-        int[][] matrix = calendario.calendar(anio_actual,mes_actual);
+        int[][] matrix = Calendario.calendar(anio_actual,mes_actual);
         for (i = 0; (i<6) ;i++ ){
             x = borde;
           for (j=0; (j<7) ;j++){
@@ -747,6 +750,9 @@ public class Client extends JFrame implements ActionListener{
 
             label_day_month[i][j].setForeground(Color.BLACK);
             label_day_month[i][j].setBackground(Color.WHITE);
+            if(fechasEventos.contains(new Date(anio_actual,mes_actual,int_aux))){
+                label_day_month[i][j].setBackground(Color.GRAY);
+            }
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             label_day_month[i][j].setBounds(x,y,lado,lado);
             panelGrafico.add(label_day_month[i][j]);
@@ -759,7 +765,7 @@ public class Client extends JFrame implements ActionListener{
         y = y+borde;
         panelGrafico.setBounds(0,0,x,y);
         panelCalendario.add(panelGrafico);
-        JPanel paneleventos = PanelEventos();
+        
         paneleventos.setBounds(x,0,350,y);
         panelCalendario.add(paneleventos);
 
@@ -794,7 +800,7 @@ public class Client extends JFrame implements ActionListener{
         int i=0;
         int j=0;
         int int_aux;
-        int[][] matrix = calendario.calendar(anio_iterador,mes_iterador);
+        int[][] matrix = Calendario.calendar(anio_iterador,mes_iterador);
         for (i = 0; (i<6) ;i++ ){
           for (j=0; (j<7) ;j++){
             int_aux = matrix[i][j];
@@ -806,6 +812,10 @@ public class Client extends JFrame implements ActionListener{
                 label_day_month[i][j].setText("");
                 label_day_month[i][j].setEnabled(false);
             }
+            label_day_month[i][j].setBackground(Color.WHITE);
+            if(fechasEventos.contains(new Date(anio_iterador,mes_iterador,int_aux))){
+                label_day_month[i][j].setBackground(Color.GRAY);
+            }            
           }
           
         }
@@ -853,6 +863,9 @@ public class Client extends JFrame implements ActionListener{
 
         if (eventos.size()!=0){
             for (Event e: eventos){
+                
+                //Añadimos la fecha a una lista para que cuando se genere el calendario grafico después este sepa si un dia tiene eventos o no.
+                fechasEventos.add(new Date(e.getDate().getYear(),e.getDate().getMonth(),e.getDate().getDate()));
 
                 fechaAux = new GregorianCalendar(e.getDate().getYear(),e.getDate().getMonth(),e.getDate().getDate(),e.getDate().getHours(),e.getDate().getMinutes());
                 //Comparamos unicamente la fecha no la hora

@@ -1,7 +1,7 @@
 import java.util.*;
 
 
-public class calendario {
+public class Calendario {
 
   //Mes empieza a 1
   public static int[][] calendar(int year, int month){
