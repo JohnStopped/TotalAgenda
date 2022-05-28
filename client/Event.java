@@ -7,8 +7,8 @@ class Event{
     private int idSesion;    
     private int id;
     private String email;
-    private Calendar date;
-    private Calendar advice_date;
+    private Date date;
+    private Date advice_date;
     private String titulo;
     private String color;
     private String note;
@@ -26,7 +26,7 @@ class Event{
 
     }
     
-    Event(int id, String email, Calendar date, Calendar advice_date, String titulo, String color, String note) {
+    Event(int id, String email, Date date, Date advice_date, String titulo, String color, String note) {
         
         this.id = id;
         this.email = email;
@@ -71,23 +71,23 @@ class Event{
     }
 
     //date
-    public void setDate(Calendar date){
+    public void setDate(Date date){
 
         this.date = date;
     }
 
-    public Calendar getDate(){
+    public Date getDate(){
 
         return this.date;
     }
 
     //advice_date
-    public void setAdvice_date(Calendar advice_date){
+    public void setAdvice_date(Date advice_date){
 
         this.advice_date = advice_date;
     }
 
-    public Calendar getAdvice_date(){
+    public Date getAdvice_date(){
 
         return this.advice_date;
     }
@@ -127,8 +127,8 @@ class Event{
 
     //toString
     public String toString(){
-        
-        String cadena = date.get(Calendar.YEAR)+"/"+date.get(Calendar.MONTH)+"/"+date.get(Calendar.DAY_OF_MONTH)+" "+String.valueOf(date.get(Calendar.HOUR_OF_DAY)) +":"+ String.valueOf(date.get(Calendar.MINUTE)) +" | "+ titulo; 
+
+        String cadena = date.getYear()+"/"+date.getMonth()+"/"+date.getDay()+" "+date.getHours() +":"+ date.getMinutes() +" | "+ titulo; 
         return (cadena);
     }
 

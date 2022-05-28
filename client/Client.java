@@ -281,8 +281,8 @@ public class Client extends JFrame implements ActionListener{
             String note;
             String[] date_pt;
             String[] advice_date_pt;
-            Calendar date; 
-            Calendar advice_date;
+            Date date; 
+            Date advice_date;
 
             for (String str_event : events) {
                 String[] att_value = str_event.split(",");
@@ -301,7 +301,7 @@ public class Client extends JFrame implements ActionListener{
                 if(str_advice_date.charAt(0)=='\"'){   
                     str_advice_date = str_advice_date.substring(1,str_advice_date.length()-1);
                     advice_date_pt = str_advice_date.split(" ");
-                    advice_date = new GregorianCalendar(new Integer(advice_date_pt[0].split("-")[0]).intValue(),new Integer(advice_date_pt[0].split("-")[1]).intValue(),new Integer(advice_date_pt[0].split("-")[2]).intValue(),new Integer(advice_date_pt[1].split(":")[0]).intValue(),new Integer(advice_date_pt[1].split(":")[1]).intValue(),new Integer(advice_date_pt[1].split(":")[2]).intValue());
+                    advice_date = new Date(new Integer(advice_date_pt[0].split("-")[0]).intValue(),new Integer(advice_date_pt[0].split("-")[1]).intValue(),new Integer(advice_date_pt[0].split("-")[2]).intValue(),new Integer(advice_date_pt[1].split(":")[0]).intValue(),new Integer(advice_date_pt[1].split(":")[1]).intValue(),new Integer(advice_date_pt[1].split(":")[2]).intValue());
                 }else {
                     advice_date = null;
                 }
@@ -319,7 +319,7 @@ public class Client extends JFrame implements ActionListener{
                 else 
                     note = null;
                 
-                date = new GregorianCalendar(new Integer(date_pt[0].split("-")[0]).intValue(),new Integer(date_pt[0].split("-")[1]).intValue(),new Integer(date_pt[0].split("-")[2]).intValue(),new Integer(date_pt[1].split(":")[0]).intValue(),new Integer(date_pt[1].split(":")[1]).intValue(),new Integer(date_pt[1].split(":")[2]).intValue());
+                date = new Date(new Integer(date_pt[0].split("-")[0]).intValue(),new Integer(date_pt[0].split("-")[1]).intValue(),new Integer(date_pt[0].split("-")[2]).intValue(),new Integer(date_pt[1].split(":")[0]).intValue(),new Integer(date_pt[1].split(":")[1]).intValue(),new Integer(date_pt[1].split(":")[2]).intValue());
                 
 
                 Event obj_event = new Event(event_id,usuario.getEmail(),date,advice_date,name,color,note);
@@ -854,7 +854,7 @@ public class Client extends JFrame implements ActionListener{
         if (eventos.size()!=0){
             for (Event e: eventos){
 
-                fechaAux = e.getDate();
+                fechaAux = new GregorianCalendar(e.getDate().getYear(),e.getDate().getMonth(),e.getDate().getDay(),e.getDate().getHours(),e.getDate().getMinutes());
                 //Comparamos unicamente la fecha no la hora
                 fechaAux.set(Calendar.HOUR_OF_DAY,0);
                 fechaAux.set(Calendar.MINUTE,0);
@@ -945,7 +945,7 @@ public class Client extends JFrame implements ActionListener{
         panelCreaEvento.add(label_fecha1);
 
         x = x+ancho+espacio_x;
-        JLabel label_fecha2 = new JLabel(String.valueOf(evento.getDate().get(Calendar.YEAR))+"/"+String.valueOf(evento.getDate().get(Calendar.MONTH))+"/"+String.valueOf(evento.getDate().get(Calendar.DAY_OF_MONTH))+" "+String.valueOf(evento.getDate().get(Calendar.HOUR))+":"+String.valueOf(evento.getDate().get(Calendar.MINUTE)));
+        JLabel label_fecha2 = new JLabel(evento.getDate().getYear()+"/"+evento.getDate().getMonth()+"/"+evento.getDate().getDay()+" "+evento.getDate().getHours() +":"+ evento.getDate().getMinutes());
         label_fecha2.setBounds(x,y,ancho,alto);    
         panelCreaEvento.add(label_fecha2);
         
@@ -957,7 +957,7 @@ public class Client extends JFrame implements ActionListener{
             label_fechaAviso.setBounds(x,y,ancho,alto);    
             panelCreaEvento.add(label_fechaAviso);            
             x = x+ancho+espacio_x;
-            JLabel label_fechaAviso2 = new JLabel(String.valueOf(evento.getAdvice_date().get(Calendar.YEAR))+"/"+String.valueOf(evento.getAdvice_date().get(Calendar.MONTH)+1)+"/"+String.valueOf(evento.getAdvice_date().get(Calendar.DAY_OF_MONTH))+" "+String.valueOf(evento.getAdvice_date().get(Calendar.HOUR))+":"+String.valueOf(evento.getAdvice_date().get(Calendar.MINUTE)));
+            JLabel label_fechaAviso2 = new JLabel(evento.getAdvice_date().getYear()+"/"+evento.getAdvice_date().getMonth()+"/"+evento.getAdvice_date().getDay()+" "+evento.getAdvice_date().getHours() +":"+ evento.getAdvice_date().getMinutes());
             label_fechaAviso2.setBounds(x,y,ancho,alto);    
             panelCreaEvento.add(label_fechaAviso2);
         }
@@ -1194,14 +1194,14 @@ public class Client extends JFrame implements ActionListener{
                     evento.setTitulo(field_titulo.getText());
                     evento.setIdSesion(usuario.getIdSesion());
                     Integer auxinteger = new Integer(0);
-                    evento.setDate(new GregorianCalendar(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
+                    evento.setDate(new Date(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
 
 
                     cadenaFecha = anio_fecha.getText()+"-"+mes_fecha.getText()+"-"+dia_fecha.getText()+" "+hora_fecha.getText()+":"+min_fecha.getText()+":00";
                     cadenaJson = "{\"session_id\":"+usuario.getIdSesion()+",\"date\":\""+cadenaFecha+"\",\"name\":\""+field_titulo.getText()+"\"";
 
                     if(!anio_recordatorio.getText().isEmpty() && !mes_recordatorio.getText().isEmpty() && !dia_recordatorio.getText().isEmpty() && !hora_recordatorio.getText().isEmpty() && !min_recordatorio.getText().isEmpty()){
-                        evento.setAdvice_date(new GregorianCalendar(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
+                        evento.setAdvice_date(new Date(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
                         cadenaFechaAviso = ",\"advice_date\":\""+anio_recordatorio.getText()+"-"+mes_recordatorio.getText()+"-"+dia_recordatorio.getText()+" "+hora_recordatorio.getText()+":"+min_recordatorio.getText()+":00\"";
                         cadenaJson = cadenaJson + cadenaFechaAviso;
                     }
