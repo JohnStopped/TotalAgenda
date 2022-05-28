@@ -625,7 +625,7 @@ public class Client extends JFrame implements ActionListener{
     private Color color(String color){
         String[] colores = {"white","rojo","verde","azul","amarillo","naranja","gris"};
         Color res = null;
-        if (color.contentEquals(colores[0])){
+        if (color.contentEquals("white")){
             res = Color.WHITE;
         }else if (color.contentEquals("blanco")){
             res = Color.WHITE;
@@ -945,7 +945,7 @@ public class Client extends JFrame implements ActionListener{
         panelCreaEvento.add(label_fecha1);
 
         x = x+ancho+espacio_x;
-        JLabel label_fecha2 = new JLabel(String.valueOf(evento.getDate().get(Calendar.YEAR))+"/"+String.valueOf(evento.getDate().get(Calendar.MONTH)+1)+"/"+String.valueOf(evento.getDate().get(Calendar.DAY_OF_MONTH))+" "+String.valueOf(evento.getDate().get(Calendar.HOUR))+":"+String.valueOf(evento.getDate().get(Calendar.MINUTE)));
+        JLabel label_fecha2 = new JLabel(String.valueOf(evento.getDate().get(Calendar.YEAR))+"/"+String.valueOf(evento.getDate().get(Calendar.MONTH))+"/"+String.valueOf(evento.getDate().get(Calendar.DAY_OF_MONTH))+" "+String.valueOf(evento.getDate().get(Calendar.HOUR))+":"+String.valueOf(evento.getDate().get(Calendar.MINUTE)));
         label_fecha2.setBounds(x,y,ancho,alto);    
         panelCreaEvento.add(label_fecha2);
         
@@ -1181,7 +1181,7 @@ public class Client extends JFrame implements ActionListener{
                 System.out.println("##");
                 System.out.println("#");
                 System.out.println("BOTON --> Formulario crear evento");
-                if (anio_fecha.getText().isEmpty() || dia_fecha.getText().isEmpty() || field_titulo.getText().isEmpty() || hora_fecha.getText().isEmpty() || min_fecha.getText().isEmpty()){
+                if (anio_fecha.getText().isEmpty() || mes_fecha.getText().isEmpty() || dia_fecha.getText().isEmpty() || field_titulo.getText().isEmpty() || hora_fecha.getText().isEmpty() || min_fecha.getText().isEmpty()){
                     FrameError("Hay campos obligatorios vacíos");
                 }else{
                     // Cuando los campos obligatorios no están vacíos se procede a crearse el evento
@@ -1195,7 +1195,8 @@ public class Client extends JFrame implements ActionListener{
                     evento.setIdSesion(usuario.getIdSesion());
                     Integer auxinteger = new Integer(0);
                     evento.setDate(new GregorianCalendar(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
-                    
+
+
                     cadenaFecha = anio_fecha.getText()+"-"+mes_fecha.getText()+"-"+dia_fecha.getText()+" "+hora_fecha.getText()+":"+min_fecha.getText()+":00";
                     cadenaJson = "{\"session_id\":"+usuario.getIdSesion()+",\"date\":\""+cadenaFecha+"\",\"name\":\""+field_titulo.getText()+"\"";
 

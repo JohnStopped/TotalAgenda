@@ -127,7 +127,8 @@ class Event{
 
     //toString
     public String toString(){
-        String cadena = date.get(Calendar.YEAR)+"/"+date.get(Calendar.MONTH)+"/"+date.get(Calendar.DAY_OF_MONTH)+" "+date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" | "+ titulo; 
+        
+        String cadena = date.get(Calendar.YEAR)+"/"+date.get(Calendar.MONTH)+"/"+date.get(Calendar.DAY_OF_MONTH)+" "+String.valueOf(date.get(Calendar.HOUR_OF_DAY)) +":"+ String.valueOf(date.get(Calendar.MINUTE)) +" | "+ titulo; 
         return (cadena);
     }
 

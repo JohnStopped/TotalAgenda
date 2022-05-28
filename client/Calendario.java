@@ -5,9 +5,9 @@ public class calendario {
 
   //Mes empieza a 1
   public static int[][] calendar(int year, int month){
-    GregorianCalendar cal_iterador = new GregorianCalendar(year,month-1,0);
+    GregorianCalendar cal_iterador = new GregorianCalendar(year,month,0); //Mes empieza a 0
     cal_iterador.setFirstDayOfWeek(GregorianCalendar.MONDAY);
-    int ndias = cal_iterador.getActualMaximum(GregorianCalendar.DATE)+1;
+    int ndias = cal_iterador.getActualMaximum(GregorianCalendar.DATE);
     //boolean bisiesto = cal_iterador.isLeapYear(year);
 
     System.out.println("Año: " + year);
@@ -31,13 +31,15 @@ public class calendario {
 
   //Dia del mes y dia de la semana empiezan a 1
   private static int[][] matrix(int dia_semana_1, int ndias){
+    int numerodias = ndias;
+
     //Se rellena una matriz de 6 filas con 0 si pertenece al día anterior, y el número del día si pertenece a este mes.
     int[][] matrix = new int[6][7];
     int z = 1;
     int i;
     int j;
-    for (i = 0; (i<6) && (z<ndias+1) ;i++ ){
-      for (j = 0; (j<7) && (z<ndias+1) ;j++){
+    for (i = 0; (i<6) && (z<numerodias+1) ;i++ ){
+      for (j = 0; (j<7) && (z<numerodias+1) ;j++){
 
         if ((i==0)&&(j<dia_semana_1-1)){
           matrix[i][j] = 0;
