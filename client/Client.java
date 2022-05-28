@@ -1206,11 +1206,8 @@ public class Client extends JFrame implements ActionListener{
                         cadenaJson = cadenaJson + cadenaFechaAviso;
                     }
 
-                    String color_vacio = "blanco";
-                    if ( !color_vacio.contentEquals( (String) menuColores.getSelectedItem() ) ){
-                        evento.setColor((String) menuColores.getSelectedItem());
-                        cadenaJson = cadenaJson + ",\"color\":\""+(String)menuColores.getSelectedItem()+"\"";
-                    }
+                    evento.setColor((String) menuColores.getSelectedItem());
+                    cadenaJson = cadenaJson + ",\"color\":\""+(String)menuColores.getSelectedItem()+"\"";
 
                     if(!field_nota.getText().isEmpty()){
                         evento.setNote(field_nota.getText());
