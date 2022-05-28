@@ -43,11 +43,11 @@ public class Client extends JFrame implements ActionListener{
     
     private int mes_actual,anio_actual,dia_actual;
     private int mes_iterador,anio_iterador;
-    private JLabel[][] label_day_month;
+    private JButton[][] label_day_month;
 
     // Apartado Evento
     private JButton boton_creaEvento;
-
+    private JPanel areaListaEventos;
     //Apartado de Cuenta
     private JButton boton_modifica_credenciales, boton_salir, boton_cerrarSesion;
 
@@ -194,6 +194,151 @@ public class Client extends JFrame implements ActionListener{
         }
     }
 
+    private List<Event> solicitaEvents(){
+
+        List<Event> events=null;
+        try{
+            String cadenaJson = "{\"session_id\":"+String.valueOf(usuario.getIdSesion())+"}";
+            HttpResponse<String> response = send("listEvents", cadenaJson);
+            
+            if (response.statusCode() == 200){
+                events = processListEvents(response.body());
+            }
+        }catch(Exception ex){
+
+        }
+
+        return events;
+    }
+
+    private List<Event> processListEvents(String body) {
+
+        /*
+        {
+            "state": 1, 
+            "desc": "List of events recovered successfully", 
+            "list_events": 
+                [
+                    {
+                      "event_id": 41618, 
+                      "date": "2022-05-27 17:00:00", 
+                      "advice_date": null, 
+                      "name": "Hacer trabajo RSSA", 
+                      "color": "red", 
+                      "note": "si ome"
+                    }, 
+                    {
+                      "event_id": 47229, 
+                      "date": "2022-05-27 17:00:00", 
+                      "advice_date": null, 
+                      "name": "Hacer TFG", 
+                      "color": "red", 
+                      "note": ""
+                    }, 
+
+                ]
+        }
+
+        */
+        List<Event> list = null;
+
+        String in_body = body.substring(1,body.length()-1); //delete first keys
+
+        String[] json_att = in_body.split(","); //divide in every attribute: value
+
+        int state = new Integer(json_att[0].split(":")[1].trim()).intValue(); //Recover state
+
+        if (state == 1) {
+            list = new ArrayList();
+            String list_events = in_body.substring(in_body.indexOf('[')+1, in_body.indexOf(']'));
+            
+            List<String> events = new ArrayList<String>();
+
+            boolean flag = true;
+            int keyUp;
+            int keyDown;
+            int indexOffset=0;
+
+            while (flag) {
+
+                keyUp = list_events.indexOf('{', indexOffset);
+                keyDown = list_events.indexOf('}', indexOffset);
+
+                if (keyUp != -1 && keyDown!=-1){
+                    events.add(list_events.substring(keyUp+1,keyDown));
+                    indexOffset = keyDown+1;
+                }
+                else {
+                    flag = false;
+                }
+            }
+
+            int event_id;
+            String str_date;
+            String str_advice_date;
+            String name;
+            String color;               
+            String note;
+            String[] date_pt;
+            String[] advice_date_pt;
+            Date date; 
+            Date advice_date;
+
+            for (String str_event : events) {
+                String[] att_value = str_event.split(",");
+
+                event_id = new Integer(att_value[0].split(":")[1].trim()).intValue();
+
+                str_date = att_value[1].split(": ")[1].trim();
+
+                str_date = str_date.substring(1,str_date.length()-1);
+                date_pt = str_date.split(" ");
+
+
+                str_advice_date = att_value[2].split(": ")[1].trim();
+                
+
+                if(str_advice_date.charAt(0)=='\"'){   
+                    str_advice_date = str_advice_date.substring(1,str_advice_date.length()-1);
+                    advice_date_pt = str_advice_date.split(" ");
+                    advice_date = new Date(new Integer(advice_date_pt[0].split("-")[0]).intValue(),new Integer(advice_date_pt[0].split("-")[1]).intValue(),new Integer(advice_date_pt[0].split("-")[2]).intValue(),new Integer(advice_date_pt[1].split(":")[0]).intValue(),new Integer(advice_date_pt[1].split(":")[1]).intValue(),new Integer(advice_date_pt[1].split(":")[2]).intValue());
+                }else {
+                    advice_date = null;
+                }
+
+                name = att_value[3].split(":")[1].trim();
+                name = name.substring(1,name.length()-1); 
+
+                color = att_value[4].split(":")[1].trim();
+                color = color.substring(1,color.length()-1);
+
+
+                note = att_value[5].split(":")[1].trim();
+                if (note.length() > 2)
+                    note = note.substring(1,note.length()-1);
+                else 
+                    note = null;
+                System.out.println(new Integer(date_pt[0].split("-")[2]).intValue());
+                date = new Date(new Integer(date_pt[0].split("-")[0]).intValue(),new Integer(date_pt[0].split("-")[1]).intValue(),new Integer(date_pt[0].split("-")[2]).intValue(),new Integer(date_pt[1].split(":")[0]).intValue(),new Integer(date_pt[1].split(":")[1]).intValue(),new Integer(date_pt[1].split(":")[2]).intValue());
+                
+
+                Event obj_event = new Event(event_id,usuario.getEmail(),date,advice_date,name,color,note);
+                System.out.println(obj_event.getId());
+                System.out.println(obj_event.getEmail());
+                System.out.println(obj_event.getDate());
+                System.out.println(obj_event.getAdvice_date());
+                System.out.println(obj_event.getTitulo());
+                System.out.println(obj_event.getColor());
+                System.out.println(obj_event.getNote());
+                System.out.println("");
+                list.add(obj_event);
+            }       
+
+        }
+        return list;
+
+    }
+
     private void close(){
 
         try{
@@ -261,7 +406,7 @@ public class Client extends JFrame implements ActionListener{
         //FILA3
         x=borde_x;
         y=y+alto+espacio_x;
-        JButton boton_formulario_login = new JButton("Inicar Sesión");
+        JButton boton_formulario_login = new JButton("Iniciar Sesión");
         boton_formulario_login.setBounds(x,y,ancho,alto-5);
 
         //Definimos lo que realiza el botón del formulario de inicio se sesión
@@ -303,7 +448,8 @@ public class Client extends JFrame implements ActionListener{
                         // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
                         if (correcto){
                             ventana.getContentPane().removeAll();
-                            ventana.getContentPane().invalidate();           
+                            ventana.getContentPane().invalidate();
+                            eventos = solicitaEvents();
                             Pestañas();
                             ventana.getContentPane().revalidate();
                             ventana.getContentPane().setVisible(true);                
@@ -476,20 +622,42 @@ public class Client extends JFrame implements ActionListener{
         return panelCreaCuenta;
     }
 
+    private Color color(String color){
+        String[] colores = {"white","rojo","verde","azul","amarillo","naranja","gris"};
+        Color res = null;
+        if (color.contentEquals("white")){
+            res = Color.WHITE;
+        }else if (color.contentEquals("blanco")){
+            res = Color.WHITE;
+        }else if (color.contentEquals(colores[1])){
+            res = Color.RED;
+        }        else if (color.contentEquals(colores[2])){
+            res = Color.GREEN;
+        }else if (color.contentEquals(colores[3])){
+            res = Color.BLUE;
+        }else if (color.contentEquals(colores[4])){
+            res = Color.YELLOW;
+        }else if (color.contentEquals(colores[5])){
+            res = Color.ORANGE;
+        }else if (color.contentEquals(colores[6])){
+            res = Color.GRAY;
+        }
+        return res;
+    }
+
     // Método para crear las Pestañas de la aplicación
     private void Pestañas(){
 
         // Se configura la ventana
         this.setTitle("TotalAgenda"); //Título del JFrame
         this.setSize(800,600); //Dimensiones del JFrame (ancho,alto) - se le añaden 25 de alto para los del marco superior de la ventana y 25 para los de la barra de menu
-        this.setResizable(true); //Redimensionable
+        this.setResizable(false); //Redimensionable
 
         JTabbedPane panelDePestanas = new JTabbedPane(JTabbedPane.TOP);
         panelCalendario = PanelCalendario();
         panelEventos = PanelEventos();
         panelCuenta = PanelCuenta();
         panelDePestanas.addTab("Calendario", null, panelCalendario, null);
-        panelDePestanas.addTab("Eventos", null, panelEventos, null);
         panelDePestanas.addTab("Cuenta", null, panelCuenta, null);
 
         panelDePestanas.setBounds(0,0,800,600);
@@ -503,6 +671,11 @@ public class Client extends JFrame implements ActionListener{
         panelCalendario.setLayout(null);
         panelCalendario.setVisible(true);
         //panelCalendario.setBackground(Color.GREEN); // Color del fondo
+
+        JPanel panelGrafico = new JPanel();
+        panelGrafico.setLayout(null);
+        panelGrafico.setVisible(true);
+        
 
         // Se definen las coordenadas para colocar los objetos
         int lado = 60;
@@ -520,33 +693,39 @@ public class Client extends JFrame implements ActionListener{
         boton_mes_menor = new JButton("ant");
         boton_mes_menor.setBounds(x,y,ancho,alto);
         boton_mes_menor.addActionListener(this);     
-        panelCalendario.add(boton_mes_menor);
+        panelGrafico.add(boton_mes_menor);
 
         x = x+ancho;
         boton_mes_mayor = new JButton("sig");
         boton_mes_mayor.setBounds(x,y,ancho,alto);
         boton_mes_mayor.addActionListener(this);     
-        panelCalendario.add(boton_mes_mayor);
+        panelGrafico.add(boton_mes_mayor);
 
         x = x+ancho+espacio_x;
         label_fecha_iterador = new JLabel(String.valueOf(mes_iterador)+"/"+String.valueOf(anio_iterador));
         label_fecha_iterador.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         label_fecha_iterador.setBounds(x,y,ancho,alto);   
-        panelCalendario.add(label_fecha_iterador);
+        panelGrafico.add(label_fecha_iterador);
+
+        x = x+ancho+espacio_x;
+        boton_creaEvento = new JButton("Crear evento");
+        boton_creaEvento.addActionListener(this);
+        boton_creaEvento.setBounds(x,y,3*ancho,alto);
+        panelGrafico.add(boton_creaEvento);
 
         // Se crea la fila con los días del calendario grafico
         x = borde;
         y = y+alto+espacio_y;
-        label_day_month = new JLabel[6][7];
+        label_day_month = new JButton[6][7];
         String[] dias= {"L","M","X","J","V","S","D"};
         for (j=0; (j<7) ;j++){
-            label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+dias[j]+"</div></html>", SwingConstants.CENTER);
-
+            label_day_month[i][j] = new JButton("<html><div style='text-align: center;'>"+dias[j]+"</div></html>");
+            label_day_month[i][j].setEnabled(false);
             label_day_month[i][j].setForeground(Color.BLACK);
             label_day_month[i][j].setBackground(Color.WHITE);
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             label_day_month[i][j].setBounds(x,y,lado,lado/2);
-            panelCalendario.add(label_day_month[i][j]);
+            panelGrafico.add(label_day_month[i][j]);
             x = x+lado;
         }
 
@@ -559,17 +738,18 @@ public class Client extends JFrame implements ActionListener{
             int_aux = matrix[i][j];
 
             if (int_aux!=0){
-                label_day_month[i][j] = new JLabel("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>", SwingConstants.CENTER);
+                label_day_month[i][j] = new JButton("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"</div></html>");
+                label_day_month[i][j].setEnabled(true);
             }else{
-                label_day_month[i][j] = new JLabel("");
-                //setEnabled(false)
+                label_day_month[i][j] = new JButton("");
+                label_day_month[i][j].setEnabled(false);
             }
 
             label_day_month[i][j].setForeground(Color.BLACK);
             label_day_month[i][j].setBackground(Color.WHITE);
             label_day_month[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             label_day_month[i][j].setBounds(x,y,lado,lado);
-            panelCalendario.add(label_day_month[i][j]);
+            panelGrafico.add(label_day_month[i][j]);
             x = x+lado;
           }
           y = y+lado;
@@ -577,8 +757,12 @@ public class Client extends JFrame implements ActionListener{
 
         x = x+borde;
         y = y+borde;
-        panelCalendario.setBounds(0,0,x,y);
-        
+        panelGrafico.setBounds(0,0,x,y);
+        panelCalendario.add(panelGrafico);
+        JPanel paneleventos = PanelEventos();
+        paneleventos.setBounds(x,0,350,y);
+        panelCalendario.add(paneleventos);
+
         return panelCalendario;       
     }
 
@@ -616,16 +800,18 @@ public class Client extends JFrame implements ActionListener{
             int_aux = matrix[i][j];
 
             if (int_aux!=0){
-                label_day_month[i][j].setText("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"<br>"+"hola"+"</div></html>");
+                label_day_month[i][j].setText("<html><div style='text-align: center;'>"+String.valueOf(int_aux)+"<br>"+"</div></html>");
+                label_day_month[i][j].setEnabled(true);
             }else{
                 label_day_month[i][j].setText("");
+                label_day_month[i][j].setEnabled(false);
             }
           }
           
         }
     }
 
-    // Método que crea la interfaz de la sección de eventos    
+    // Método que crea la interfaz de la sección de eventos dentro de la pestaña calendario  
     private JPanel PanelEventos(){
 
         JPanel panelEventos = new JPanel();
@@ -641,40 +827,230 @@ public class Client extends JFrame implements ActionListener{
         JLabel label_fecha = new JLabel(String.valueOf(dia_actual+"/"+mes_actual+"/"+anio_actual));
         barraSuperior.add(label_fecha);
 
-        boton_creaEvento = new JButton("Crear evento");
-        boton_creaEvento.addActionListener(this);
-        barraSuperior.add(boton_creaEvento);
-        
         panelEventos.add(barraSuperior,BorderLayout.NORTH);
 
         JPanel areaListaEventos = new JPanel();
         areaListaEventos.setLayout(null);
-        areaListaEventos.setVisible(true);
         // Se definen las coordenadas para colocar los objetos
-        int ancho = 200;
+        int ancho = 280;
         int alto = 30;
-        int borde = 10;
+        int borde = 15;
         int x = borde;
         int y = borde;
         int espacio_x = 10;
         int espacio_y = 20;
         int i = 0;
-        /*
-        if (eventos.length()!=0){
-            JLabel[] labelEventos = new ArrayList();
-            for (event e: eventos){
-                labelEventos[i] = new JLabel(eventos.toString());
-                labelEventos[i].setBounds(x,y,ancho,alto);
-                labelEventos[i].add(areaListaEventos);
-                y=y+alto;
+        int j = 1;
+
+        Calendar fecha_actual = new GregorianCalendar();
+        //Comparamos unicamente la fecha no la hora
+        fecha_actual.set(Calendar.HOUR_OF_DAY,0);
+        fecha_actual.set(Calendar.MINUTE,0);
+        fecha_actual.set(Calendar.SECOND,0);
+        Calendar fecha_iterador = fecha_actual;
+        Calendar fechaAux = fecha_actual;
+        JButton botonAux;
+
+        if (eventos.size()!=0){
+            for (Event e: eventos){
+
+                fechaAux = new GregorianCalendar(e.getDate().getYear(),e.getDate().getMonth(),e.getDate().getDate(),e.getDate().getHours(),e.getDate().getMinutes());
+                //Comparamos unicamente la fecha no la hora
+                fechaAux.set(Calendar.HOUR_OF_DAY,0);
+                fechaAux.set(Calendar.MINUTE,0);
+                fechaAux.set(Calendar.SECOND,0);               
+                
+                // La fecha del evento es anterior a la fecha del iterador
+                if( fecha_iterador.getInstance().compareTo(fechaAux.getInstance()) > 0 ){
+                    //No se imprime
+                }              
+                // Las fechas son iguales
+                else if( fecha_iterador.getInstance().compareTo(fechaAux.getInstance()) == 0 ){
+                    // Se imprime el evento en cuestión, la fecha ya se ha impreso antes
+                    botonAux = new JButton("");
+                    botonAux.setEnabled(false);
+                    if (e.getColor()!=null){
+                        botonAux.setForeground(color(e.getColor()));
+                        botonAux.setBackground(color(e.getColor()));
+                    }                
+                    botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                    botonAux.setBounds(x,y,alto,alto);
+                    areaListaEventos.add(botonAux);
+                    x = x+alto;
+                    botonAux = new JButton(e.toString());
+                    botonAux.setForeground(Color.BLACK);
+                    botonAux.setBackground(Color.WHITE);
+                    botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                    botonAux.setBounds(x,y,ancho,alto);
+                    botonAux.addActionListener (new ActionListener () {
+                        public void actionPerformed(ActionEvent ae) {
+                            FrameEvento (e);
+                        }
+                    });
+
+                    areaListaEventos.add(botonAux);
+                    y=y+alto;
+                    x=borde;
+                }
                 i++;
             }
         }
-        */        
+        
+        areaListaEventos.setVisible(true);
+
         JScrollPane scrollBar = new JScrollPane(areaListaEventos, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panelEventos.add(scrollBar,BorderLayout.CENTER);
 
         return panelEventos;
+    }
+
+    private void FrameEvento(Event evento){
+        JDialog frameEvento = new JDialog(this);
+        
+        JPanel panelCreaEvento = new JPanel();
+        panelCreaEvento.setLayout(null);
+        panelCreaEvento.setVisible(true);
+
+        // Se definen las coordenadas para colocar los objetos
+        int ancho = 120;
+        int alto = 30;
+        int borde = 10;
+        int x = borde;
+        int y = borde;
+        int espacio_x = 10;
+        int espacio_y = 10;
+        String event_id = String.valueOf(evento.getId());
+
+        // Se crean las etiquetas y botones, y se añaden a la ventana
+        //FILA1
+        JButton botonAux = new JButton("");
+        botonAux.setEnabled(false);
+        botonAux.setForeground(color(evento.getColor()));
+        botonAux.setBackground(color(evento.getColor()));                
+        botonAux.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        botonAux.setBounds(x,y,alto,alto);
+        panelCreaEvento.add(botonAux);
+        x = x+alto;        
+        
+        JLabel label_titulo = new JLabel(evento.getTitulo());
+        label_titulo.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        label_titulo.setBounds(x,y,2*ancho,alto);
+        panelCreaEvento.add(label_titulo);
+
+        //FILA2
+        x = borde;
+        y=y+alto+espacio_y;
+        JLabel label_fecha1 = new JLabel("Fecha: ");
+        label_fecha1.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_fecha1);
+
+        x = x+ancho+espacio_x;
+        JLabel label_fecha2 = new JLabel(evento.getDate().getYear()+"/"+evento.getDate().getMonth()+"/"+evento.getDate().getDate()+" "+evento.getDate().getHours() +":"+ evento.getDate().getMinutes());
+        label_fecha2.setBounds(x,y,ancho,alto);    
+        panelCreaEvento.add(label_fecha2);
+        
+        if(evento.getAdvice_date()!=null){
+            //FILA2
+            x = borde;
+            y=y+alto+espacio_y;
+            JLabel label_fechaAviso = new JLabel("Fecha de aviso: ");
+            label_fechaAviso.setBounds(x,y,ancho,alto);    
+            panelCreaEvento.add(label_fechaAviso);            
+            x = x+ancho+espacio_x;
+            JLabel label_fechaAviso2 = new JLabel(evento.getAdvice_date().getYear()+"/"+evento.getAdvice_date().getMonth()+"/"+evento.getAdvice_date().getDate()+" "+evento.getAdvice_date().getHours() +":"+ evento.getAdvice_date().getMinutes());
+            label_fechaAviso2.setBounds(x,y,ancho,alto);    
+            panelCreaEvento.add(label_fechaAviso2);
+        }
+
+
+        JButton boton_borrar = new JButton("Borrar");
+        if (evento.getNote()!=null){
+            //FILA4
+            x = borde;
+            y=y+alto+espacio_y;
+            JLabel label_nota = new JLabel("Nota: ");
+            label_nota.setBounds(x,y,ancho,alto);    
+            panelCreaEvento.add(label_nota);
+            
+            //FILA5
+            x = borde;
+            y=y+alto+espacio_y;
+            JLabel field_nota = new JLabel(evento.getNote());
+            field_nota.setBounds(x,y,3*ancho,5*alto);    
+            panelCreaEvento.add(field_nota);            
+            //FILA6
+            x = borde;
+            y=y+5*alto+espacio_y;
+            boton_borrar.setBounds(x,y,ancho,alto);
+        }else{
+            //FILA6
+            x = borde;
+            y=y+alto+espacio_y;            
+            boton_borrar.setBounds(x,y,ancho,alto);            
+        }
+
+
+        // Se define lo que realiza el boton del formulario para crear un evento
+        boton_borrar.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("##");
+                System.out.println("#");
+                System.out.println("BOTON --> Formulario crear evento");
+                String cadenaJson="{\"event_id\":"+event_id+"}";
+
+                try{
+                    HttpResponse<String> response = send("deleteEvent",cadenaJson);
+
+                    if (response.statusCode() == 200){
+                        Integer int_aux = new Integer(0);
+
+                        //{"state": 0, "desc": "Session already was initializated", "session-id": 0}
+                        // Se quitan las llaves al body (primer y ultimo caracter)
+                        String strAux = response.body().substring(1,response.body().length()-1);
+
+                        // Se hace un split por comas
+                        String [] atributos = strAux.split(",");
+
+                        // Extraemos la información de los elemetnos que nos interesan, el 3
+                        System.out.println("El estado de la operación POST es: "+int_aux.parseInt(atributos[0].split(":")[1].trim()));
+                        
+                        if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
+                            //Borramos el evento de la lista local
+
+                            eventos.remove(evento);
+                            ventana.getContentPane().removeAll();
+                            ventana.getContentPane().invalidate();           
+                            Pestañas();
+                            ventana.getContentPane().revalidate();
+                            ventana.getContentPane().setVisible(true);                                 
+                        }else{
+                            FrameError("Ha ocurrido un problema");
+                        }
+                    }
+
+                }catch(Exception ex){
+                    FrameError("Ha ocurrido un error,vuelva a intentarlo :"+ex);
+                    System.out.println("excepción:\n"+ex);
+                }
+
+                System.out.println("#");
+                System.out.println("##");
+                // Se cierra la ventana flotante
+                frameEvento.dispose();
+            
+            }
+        }); 
+
+        panelCreaEvento.add(boton_borrar);
+
+        x = x + 3*ancho + 3*borde;
+        y = y + alto + borde;
+        panelCreaEvento.setBounds(0,0,x,y); 
+        
+        frameEvento.add(panelCreaEvento);
+        frameEvento.setSize(x,y+25);
+        frameEvento.setTitle("Evento");
+        frameEvento.setVisible(true);
     }
 
     private void FrameCreaEventos(){
@@ -695,12 +1071,12 @@ public class Client extends JFrame implements ActionListener{
 
         // Se crean las etiquetas y botones, y se añaden a la ventana
         //FILA1
-        JTextField field_titulo = new JTextField("Título");
+        JTextField field_titulo = new JTextField("Titulo");
         field_titulo.setBounds(x,y,2*ancho,alto);
         panelCreaEvento.add(field_titulo);
 
         x = x+2*ancho+espacio_x*2;
-        String[] colores = {"blanco","rojo","verde","azul","amarillo","naranja","negro","gris"};
+        String[] colores = {"blanco","rojo","verde","azul","amarillo","naranja","gris"};
         JComboBox<String> menuColores = new JComboBox<String>(colores);
         menuColores.setBounds(x,y,ancho*2/3,alto);
         panelCreaEvento.add(menuColores);
@@ -805,11 +1181,10 @@ public class Client extends JFrame implements ActionListener{
                 System.out.println("##");
                 System.out.println("#");
                 System.out.println("BOTON --> Formulario crear evento");
-                if (anio_fecha.getText().isEmpty() || dia_fecha.getText().isEmpty() || field_titulo.getText().isEmpty() || hora_fecha.getText().isEmpty() || min_fecha.getText().isEmpty()){
+                if (anio_fecha.getText().isEmpty() || mes_fecha.getText().isEmpty() || dia_fecha.getText().isEmpty() || field_titulo.getText().isEmpty() || hora_fecha.getText().isEmpty() || min_fecha.getText().isEmpty()){
                     FrameError("Hay campos obligatorios vacíos");
                 }else{
                     // Cuando los campos obligatorios no están vacíos se procede a crearse el evento
-                    boolean correcto = false;
                     String cadenaJson;
                     String cadenaFecha; //2004-10-19 10:23:54
                     String cadenaFechaAviso;
@@ -819,22 +1194,20 @@ public class Client extends JFrame implements ActionListener{
                     evento.setTitulo(field_titulo.getText());
                     evento.setIdSesion(usuario.getIdSesion());
                     Integer auxinteger = new Integer(0);
-                    evento.setDate(new GregorianCalendar(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
-                    
+                    evento.setDate(new Date(auxinteger.parseInt(anio_fecha.getText()),auxinteger.parseInt(mes_fecha.getText()),auxinteger.parseInt(dia_fecha.getText()),auxinteger.parseInt(hora_fecha.getText()),auxinteger.parseInt(min_fecha.getText())));
+
+
                     cadenaFecha = anio_fecha.getText()+"-"+mes_fecha.getText()+"-"+dia_fecha.getText()+" "+hora_fecha.getText()+":"+min_fecha.getText()+":00";
                     cadenaJson = "{\"session_id\":"+usuario.getIdSesion()+",\"date\":\""+cadenaFecha+"\",\"name\":\""+field_titulo.getText()+"\"";
 
                     if(!anio_recordatorio.getText().isEmpty() && !mes_recordatorio.getText().isEmpty() && !dia_recordatorio.getText().isEmpty() && !hora_recordatorio.getText().isEmpty() && !min_recordatorio.getText().isEmpty()){
-                        evento.setAdvice_date(new GregorianCalendar(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
+                        evento.setAdvice_date(new Date(auxinteger.parseInt(anio_recordatorio.getText()),auxinteger.parseInt(mes_recordatorio.getText()),auxinteger.parseInt(dia_recordatorio.getText()),auxinteger.parseInt(hora_recordatorio.getText()),auxinteger.parseInt(min_recordatorio.getText())));
                         cadenaFechaAviso = ",\"advice_date\":\""+anio_recordatorio.getText()+"-"+mes_recordatorio.getText()+"-"+dia_recordatorio.getText()+" "+hora_recordatorio.getText()+":"+min_recordatorio.getText()+":00\"";
                         cadenaJson = cadenaJson + cadenaFechaAviso;
                     }
 
-                    String color_vacio = "blanco";
-                    if ( !color_vacio.contentEquals( (String) menuColores.getSelectedItem() ) ){
-                        evento.setColor((String) menuColores.getSelectedItem());
-                        cadenaJson = cadenaJson + ",\"color\":\""+(String)menuColores.getSelectedItem()+"\"";
-                    }
+                    evento.setColor((String) menuColores.getSelectedItem());
+                    cadenaJson = cadenaJson + ",\"color\":\""+(String)menuColores.getSelectedItem()+"\"";
 
                     if(!field_nota.getText().isEmpty()){
                         evento.setNote(field_nota.getText());
@@ -861,23 +1234,17 @@ public class Client extends JFrame implements ActionListener{
                             System.out.println("El estado de la operación POST es: "+int_aux.parseInt(atributos[0].split(":")[1].trim()));
                             
                             if (int_aux.parseInt(atributos[0].split(":")[1].trim()) == 1){
-
-                                correcto = true;
                                 evento.setId(int_aux.parseInt(atributos[2].split(":")[1].trim())); //TODO
-                                eventos.add(evento);
+                                eventos.add(new Integer (int_aux.parseInt(atributos[3].split(":")[1].trim())).intValue(),evento);
+                                ventana.getContentPane().removeAll();
+                                ventana.getContentPane().invalidate();           
+                                Pestañas();
+                                System.out.println("4");
+                                ventana.getContentPane().revalidate();
+                                ventana.getContentPane().setVisible(true);                                 
+                            }else{
+                                FrameError("Ha ocurrido un problema");
                             }
-                        }
-
-                        // Según si las credenciales son válidas o no se accede a la aplicación o se genera un error
-                        if (correcto){
-                            System.out.println("Las credenciales son válidas");
-                            ventana.getContentPane().removeAll();
-                            ventana.getContentPane().invalidate();           
-                            Pestañas();
-                            ventana.getContentPane().revalidate();
-                            ventana.getContentPane().setVisible(true);                
-                        }else{
-                            FrameError("Ha ocurrido un problema");
                         }
 
                     }catch(Exception ex){

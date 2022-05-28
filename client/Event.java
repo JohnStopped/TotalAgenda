@@ -7,28 +7,27 @@ class Event{
     private int idSesion;    
     private int id;
     private String email;
-    private Calendar date;
-    private Calendar advice_date;
+    private Date date;
+    private Date advice_date;
     private String titulo;
     private String color;
     private String note;
 
     Event(){
 
-        //this.idSesion = idSesion;
-        //this.id = id;
-        //this.email = email;
-        //this.date = date;
-        //this.advice_date = advice_date;
-        //this.titulo = titulo;
-        //this.color = color;
-        //this.note = note;
+        //this.idSesion = null;
+        //this.id = null;
+        //this.email = null;
+        //this.date = null;
+        //this.advice_date = null;
+        //this.titulo = null;
+        //this.color = null;
+        //this.note = null;
 
     }
     
-    Event(int id, String email, Calendar date, Calendar advice_date, String titulo, String color, String note) {
+    Event(int id, String email, Date date, Date advice_date, String titulo, String color, String note) {
         
-        this.idSesion = idSesion;
         this.id = id;
         this.email = email;
         this.date = date;
@@ -72,23 +71,23 @@ class Event{
     }
 
     //date
-    public void setDate(Calendar date){
+    public void setDate(Date date){
 
         this.date = date;
     }
 
-    public Calendar getDate(){
+    public Date getDate(){
 
         return this.date;
     }
 
     //advice_date
-    public void setAdvice_date(Calendar advice_date){
+    public void setAdvice_date(Date advice_date){
 
         this.advice_date = advice_date;
     }
 
-    public Calendar getAdvice_date(){
+    public Date getAdvice_date(){
 
         return this.advice_date;
     }
@@ -128,7 +127,9 @@ class Event{
 
     //toString
     public String toString(){
-        return (date.get(Calendar.HOUR_OF_DAY) +":"+ date.get(Calendar.MINUTE) +" "+ titulo);
+
+        String cadena = date.getYear()+"/"+date.getMonth()+"/"+date.getDate()+" "+date.getHours() +":"+ date.getMinutes() +" | "+ titulo; 
+        return (cadena);
     }
 
 }
